@@ -1,0 +1,345 @@
+.table-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: radial-gradient(ellipse at center, #2c3e50 0%, #1a252f 100%);
+  overflow: hidden;
+  padding-top: 60px;
+}
+
+.table-frame {
+  width: 140%;
+  height: 700px;
+  position: relative;
+  margin-left: -20%;
+  margin-right: -20%;
+}
+
+.table-surface {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, #228B22 0%, #006400 100%);
+  border-radius: 0 0 40% 40%;
+  position: relative;
+  padding: 40px;
+  /* Tworzymy drewnianą ramkę używając box-shadow */
+  box-shadow: 
+    /* Wewnętrzny cień dla głębi */
+    inset 0 0 30px rgba(0,0,0,0.2),
+    /* Główna drewniana ramka */
+    0 0 0 25px #8b4513,
+    0 0 0 27px #654321,
+    0 0 0 30px #a0522d,
+    /* Zewnętrzny cień */
+    0 10px 30px rgba(0,0,0,0.5);
+    
+  /* Dodajemy teksturę drewna jako tło na ramce */
+  background-image: 
+    /* Zielony gradient na wierzchu */
+    radial-gradient(ellipse at center, #228B22 0%, #006400 100%),
+    /* Subtelne linie na zielonym filcu */
+    repeating-linear-gradient(
+      to right,
+      transparent,
+      transparent 1px,
+      rgba(255, 255, 255, 0.03) 1px,
+      rgba(255, 255, 255, 0.03) 2px
+    );
+}
+
+/* Dodajemy teksturę drewna jako pseudo-element na ramce */
+.table-surface::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  right: -30px;
+  bottom: -30px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.1) 2px,
+    rgba(0,0,0,0.1) 4px
+  );
+  border-radius: 0 0 40% 40%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Obszar krupiera */
+.dealer-area {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 100%;
+  z-index: 10;
+}
+
+.dealer-label {
+  color: #FFD700;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.dealer-cards {
+  display: flex;
+  gap: -20px;
+  justify-content: center;
+}
+
+/* Napisy na stole */
+.table-text {
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.blackjack-text {
+  color: #FFD700;
+  font-size: 38px;
+  font-weight: bold;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.pays-text {
+  color: #FFD700;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+}
+
+.dealer-must-text {
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.insurance-text {
+  color: #FFD700;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  letter-spacing: 1px;
+}
+
+
+
+/* Obszar gracza */
+.player-area {
+  position: absolute;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 100%;
+  z-index: 10;
+}
+
+.player-cards {
+  display: flex;
+  gap: -20px;
+  justify-content: center;
+}
+
+
+
+
+/* Responsywność */
+@media (max-width: 1400px) {
+  .table-container {
+    padding-top: 50px;
+  }
+
+  .table-frame {
+    width: 130%;
+    height: 600px;
+    margin-left: -15%;
+    margin-right: -15%;
+  }
+
+  .blackjack-text {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .table-container {
+    padding-top: 40px;
+  }
+
+  .table-frame {
+    width: 120%;
+    height: 500px;
+    margin-left: -10%;
+    margin-right: -10%;
+  }
+
+  .table-surface {
+    padding: 30px;
+  }
+
+  .blackjack-text {
+    font-size: 28px;
+  }
+
+  .pays-text {
+    font-size: 14px;
+  }
+
+  .dealer-area {
+    top: 30px;
+  }
+
+  .player-area {
+    bottom: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    padding-top: 30px;
+  }
+
+  .table-frame {
+    width: 110%;
+    height: 450px;
+    margin-left: -5%;
+    margin-right: -5%;
+  }
+
+  .table-surface {
+    padding: 20px;
+    /* Zmniejszamy grubość drewnianej ramki */
+    box-shadow: 
+      inset 0 0 20px rgba(0,0,0,0.2),
+      0 0 0 15px #8b4513,
+      0 0 0 17px #654321,
+      0 0 0 20px #a0522d,
+      0 5px 15px rgba(0,0,0,0.5);
+  }
+
+  .blackjack-text {
+    font-size: 24px;
+  }
+
+  .pays-text {
+    font-size: 12px;
+  }
+
+  .dealer-must-text {
+    font-size: 11px;
+  }
+
+  .insurance-text {
+    font-size: 11px;
+  }
+
+  .dealer-area {
+    top: 20px;
+  }
+
+  .dealer-label {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .player-area {
+    bottom: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-container {
+    padding-top: 20px;
+  }
+
+  .table-frame {
+    width: 100%;
+    height: 400px;
+    margin: 0;
+  }
+
+  .table-surface {
+    padding: 15px;
+    /* Jeszcze cieńsza ramka dla małych ekranów */
+    box-shadow: 
+      inset 0 0 15px rgba(0,0,0,0.2),
+      0 0 0 10px #8b4513,
+      0 0 0 12px #654321,
+      0 0 0 15px #a0522d,
+      0 5px 10px rgba(0,0,0,0.5);
+  }
+
+  .blackjack-text {
+    font-size: 20px;
+  }
+
+  .pays-text {
+    font-size: 10px;
+  }
+
+  .dealer-must-text {
+    font-size: 9px;
+  }
+
+  .insurance-text {
+    font-size: 9px;
+  }
+
+  .dealer-area {
+    top: 15px;
+  }
+
+  .dealer-label {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .player-area {
+    bottom: 60px;
+  }
+}
+
+/* Orientacja pozioma na telefonach */
+@media (max-height: 480px) and (orientation: landscape) {
+  .table-container {
+    padding-top: 10px;
+  }
+
+  .table-frame {
+    height: 90vh;
+  }
+
+  .table-surface {
+    padding: 15px;
+  }
+
+  .blackjack-text {
+    font-size: 20px;
+  }
+
+  .player-area {
+    bottom: 50px;
+  }
+
+  .dealer-area {
+    top: 10px;
+  }
+} 
