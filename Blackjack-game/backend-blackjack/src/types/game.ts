@@ -20,14 +20,23 @@ export interface Card {
   isFaceUp: boolean;
 }
 
+export interface Hand {
+  cards: Card[];
+  bet: number;
+  isFinished: boolean;
+  hasDoubled: boolean;
+  hasSplit: boolean;
+}
+
 export interface Player {
   id: string;
-  hand: Card[];
-  bet: number;
+  hands: Hand[];
   balance: number;
   isDealer: boolean;
-  moveTimeoutId?: NodeJS.Timeout; // ID timera dla ruchu gracza
-  betTimeoutId?: NodeJS.Timeout;  // ID timera dla zakładu
+  seatNumber?: number; // Dodany numer miejsca (1, 2, 3)
+  moveTimeoutId?: NodeJS.Timeout;
+  betTimeoutId?: NodeJS.Timeout;
+  currentHandIndex?: number;
 }
 
 export interface GameSession {
@@ -36,6 +45,9 @@ export interface GameSession {
   players: Player[];
   currentPlayerIndex: number;
   deck: Card[];
-  lastMoveTime?: number;      // Timestamp ostatniego ruchu
-  currentTurnStartTime?: number; // Timestamp rozpoczęcia aktualnej tury
+  lastMoveTime?: number;
+  currentTurnStartTime?: number;
+  insuranceAvailable?: boolean;
+  insurancePhase?: boolean;
+  occupiedSeats: Set<number>; // Śledzenie zajętych miejsc (1, 2, 3)
 }
