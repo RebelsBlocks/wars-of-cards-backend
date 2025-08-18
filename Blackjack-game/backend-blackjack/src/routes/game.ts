@@ -8,10 +8,31 @@ export function createGameRouter(gameService: GameService) {
   // Utworzenie nowej gry
   router.post('/games', (req, res) => {
     try {
+      console.log('Creating new game...');
       const game = gameService.createGame();
+      console.log('Game created successfully:', game.id);
       res.status(201).json(game);
     } catch (error) {
+      console.error('Error creating game:', error);
       res.status(500).json({ error: 'Nie udało się utworzyć gry' });
+    }
+  });
+
+  // Znajdź dostępną grę z wolnymi miejscami
+  router.get('/games/available', (req, res) => {
+    try {
+      console.log('Looking for available game...');
+      const availableGame = gameService.findAvailableGame();
+      if (availableGame) {
+        console.log('Found available game:', availableGame.id);
+        res.status(200).json(availableGame);
+      } else {
+        console.log('No available games found');
+        res.status(404).json({ error: 'Brak dostępnych gier' });
+      }
+    } catch (error) {
+      console.error('Error finding available game:', error);
+      res.status(500).json({ error: 'Nie udało się znaleźć dostępnej gry' });
     }
   });
 
@@ -19,11 +40,25 @@ export function createGameRouter(gameService: GameService) {
   router.post('/games/:gameId/join', (req, res) => {
     try {
       const { gameId } = req.params;
-      const { initialBalance } = req.body;
+      const { seatNumber, initialBalance } = req.body;
       
-      const player = gameService.joinGame(gameId, initialBalance);
+      console.log('Join request received:', { 
+        gameId, 
+        seatNumber, 
+        initialBalance,
+        body: req.body 
+      });
+      
+      if (!seatNumber || seatNumber < 1 || seatNumber > 3) {
+        console.error('Invalid seat number:', seatNumber);
+        return res.status(400).json({ error: 'Nieprawidłowy numer miejsca (1-3)' });
+      }
+      
+      const player = gameService.joinGame(gameId, seatNumber, initialBalance);
+      console.log('Player joined successfully:', player.id);
       res.status(200).json(player);
     } catch (error) {
+      console.error('Join error:', error);
       if (error instanceof Error) {
         res.status(400).json({ error: error.message });
       } else {
@@ -94,6 +129,23 @@ export function createGameRouter(gameService: GameService) {
         res.status(400).json({ error: error.message });
       } else {
         res.status(500).json({ error: 'Nie udało się wykonać ruchu' });
+      }
+    }
+  });
+
+  // Nowy endpoint do opuszczenia gry
+  router.post('/games/:gameId/leave', (req, res) => {
+    try {
+      const { gameId } = req.params;
+      const { playerId } = req.body;
+      
+      gameService.leaveGame(gameId, playerId);
+      res.status(200).json({ success: true });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'Nie udało się opuścić gry' });
       }
     }
   });
