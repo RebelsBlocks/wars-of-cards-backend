@@ -6,34 +6,34 @@
   align-items: flex-start;
   background: radial-gradient(ellipse at center, #2c3e50 0%, #1a252f 100%);
   overflow: hidden;
-  padding-top: 60px;
+  padding-top: 40px; /* Zwiększony padding z 30px */
 }
 
+/* Zmniejszamy rozmiar stołu */
 .table-frame {
-  width: 140%;
-  height: 700px;
+  width: 100%; /* Zmniejszony rozmiar z 120% na 100% */
+  height: 520px; /* Zwiększona wysokość z 450px na 520px */
   position: relative;
-  margin-left: -20%;
-  margin-right: -20%;
+  margin: 0; /* Usunięte marginesy */
 }
 
 .table-surface {
   width: 100%;
   height: 100%;
   background: radial-gradient(ellipse at center, #228B22 0%, #006400 100%);
-  border-radius: 0 0 40% 40%;
+  border-radius: 0 0 50% 50%; /* Zwiększony promień zaokrąglenia */
   position: relative;
-  padding: 40px;
+  padding: 25px; /* Zwiększony padding z 20px */
   /* Tworzymy drewnianą ramkę używając box-shadow */
   box-shadow: 
     /* Wewnętrzny cień dla głębi */
-    inset 0 0 30px rgba(0,0,0,0.2),
+    inset 0 0 25px rgba(0,0,0,0.2),
     /* Główna drewniana ramka */
-    0 0 0 25px #8b4513,
-    0 0 0 27px #654321,
-    0 0 0 30px #a0522d,
+    0 0 0 18px #8b4513,
+    0 0 0 20px #654321,
+    0 0 0 23px #a0522d,
     /* Zewnętrzny cień */
-    0 10px 30px rgba(0,0,0,0.5);
+    0 6px 18px rgba(0,0,0,0.5);
     
   /* Dodajemy teksturę drewna jako tło na ramce */
   background-image: 
@@ -72,7 +72,7 @@
 /* Obszar krupiera */
 .dealer-area {
   position: absolute;
-  top: 40px;
+  top: 25px; /* Zwiększone z 20px */
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -82,9 +82,9 @@
 
 .dealer-label {
   color: #FFD700;
-  font-size: 16px;
+  font-size: 18px; /* Zwiększone z 16px */
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 12px; /* Zwiększone z 10px */
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
@@ -97,7 +97,7 @@
 /* Napisy na stole */
 .table-text {
   position: absolute;
-  top: 25%;
+  top: 28%; /* Dostosowane do nowej wysokości */
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -106,34 +106,34 @@
 
 .blackjack-text {
   color: #FFD700;
-  font-size: 38px;
+  font-size: 36px; /* Zwiększone z 32px */
   font-weight: bold;
   text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
   letter-spacing: 4px;
-  margin-bottom: 8px;
+  margin-bottom: 8px; /* Zwiększone z 6px */
 }
 
 .pays-text {
   color: #FFD700;
-  font-size: 16px;
+  font-size: 16px; /* Zwiększone z 14px */
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
   letter-spacing: 2px;
-  margin-bottom: 15px;
+  margin-bottom: 12px; /* Zwiększone z 10px */
 }
 
 .dealer-must-text {
   color: #FFFFFF;
-  font-size: 14px;
+  font-size: 14px; /* Zwiększone z 12px */
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
   letter-spacing: 1px;
-  margin-bottom: 10px;
+  margin-bottom: 10px; /* Zwiększone z 8px */
 }
 
 .insurance-text {
   color: #FFD700;
-  font-size: 14px;
+  font-size: 14px; /* Zwiększone z 12px */
   font-weight: bold;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
   letter-spacing: 1px;
@@ -154,8 +154,101 @@
 
 .player-cards {
   display: flex;
-  gap: -20px;
+  gap: -15px;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 75px; /* Zmniejszone z 90px */
+}
+
+/* Obszary graczy */
+.player-spots {
+  position: absolute;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+/* Przesuwamy miejsca 1 i 3 do góry, a miejsce 2 zostawiamy niżej */
+.player-spots .player-spot:first-child,
+.player-spots .player-spot:last-child {
+  margin-bottom: 35px; /* Zwiększone z 25px */
+}
+
+/* Przesuwamy środkowe miejsce w dół */
+.player-spots .player-spot:nth-child(2) {
+  margin-bottom: -10px;
+}
+
+.player-spot {
+  width: 90px; /* Zmniejszone ze 110px */
+  height: 90px;
+  position: relative;
+  padding: 6px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  margin: 0 12px;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-spot.occupied {
+  border-color: rgba(255, 215, 0, 0.9);
+  background: rgba(0, 100, 0, 0.4);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.player-spot.vacant {
+  opacity: 0.8;
+  border-style: dashed;
+}
+
+.spot-number {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFD700;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
+.vacant-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+.bet-amount {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFD700;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.7);
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.5);
 }
 
 
@@ -164,35 +257,99 @@
 /* Responsywność */
 @media (max-width: 1400px) {
   .table-container {
-    padding-top: 50px;
+    padding-top: 35px;
   }
 
   .table-frame {
-    width: 130%;
-    height: 600px;
-    margin-left: -15%;
-    margin-right: -15%;
+    height: 480px; /* Proporcjonalnie dostosowane */
   }
 
   .blackjack-text {
-    font-size: 32px;
+    font-size: 34px;
+  }
+
+  .player-spot {
+    width: 85px;
+    height: 85px;
+    margin: 0 10px;
   }
 }
 
 @media (max-width: 1024px) {
   .table-container {
-    padding-top: 40px;
+    padding-top: 30px;
   }
 
   .table-frame {
-    width: 120%;
-    height: 500px;
-    margin-left: -10%;
-    margin-right: -10%;
+    height: 440px; /* Proporcjonalnie dostosowane */
   }
 
   .table-surface {
-    padding: 30px;
+    padding: 22px;
+  }
+
+  .blackjack-text {
+    font-size: 32px;
+  }
+
+  .pays-text {
+    font-size: 15px;
+  }
+
+  .dealer-area {
+    top: 22px;
+  }
+
+  .dealer-label {
+    font-size: 17px;
+  }
+
+  .player-spots {
+    bottom: 32px;
+  }
+
+  .player-spot {
+    width: 80px;
+    height: 80px;
+    margin: 0 8px;
+  }
+
+  .player-spots .player-spot:first-child,
+  .player-spots .player-spot:last-child {
+    margin-bottom: 20px;
+  }
+
+  .player-spots .player-spot:nth-child(2) {
+    margin-bottom: -6px;
+  }
+
+  .spot-number {
+    font-size: 11px;
+    top: -22px;
+  }
+
+  .vacant-label {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    padding-top: 25px;
+  }
+
+  .table-frame {
+    height: 400px; /* Proporcjonalnie dostosowane */
+  }
+
+  .table-surface {
+    padding: 20px;
+    box-shadow: 
+      inset 0 0 20px rgba(0,0,0,0.2),
+      0 0 0 15px #8b4513,
+      0 0 0 17px #654321,
+      0 0 0 20px #a0522d,
+      0 5px 15px rgba(0,0,0,0.5);
   }
 
   .blackjack-text {
@@ -203,36 +360,69 @@
     font-size: 14px;
   }
 
-  .dealer-area {
-    top: 30px;
+  .dealer-must-text {
+    font-size: 12px;
   }
 
-  .player-area {
-    bottom: 100px;
+  .insurance-text {
+    font-size: 12px;
+  }
+
+  .dealer-area {
+    top: 20px;
+  }
+
+  .dealer-label {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .player-spots {
+    bottom: 28px;
+  }
+
+  .player-spot {
+    width: 70px;
+    height: 70px;
+    margin: 0 6px;
+  }
+
+  .player-spots .player-spot:first-child,
+  .player-spots .player-spot:last-child {
+    margin-bottom: 15px;
+  }
+
+  .player-spots .player-spot:nth-child(2) {
+    margin-bottom: -5px;
+  }
+
+  .spot-number {
+    font-size: 10px;
+    top: -20px;
+  }
+
+  .vacant-label {
+    font-size: 8px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .table-container {
-    padding-top: 30px;
+    padding-top: 20px;
   }
 
   .table-frame {
-    width: 110%;
-    height: 450px;
-    margin-left: -5%;
-    margin-right: -5%;
+    height: 360px; /* Proporcjonalnie dostosowane */
   }
 
   .table-surface {
-    padding: 20px;
-    /* Zmniejszamy grubość drewnianej ramki */
+    padding: 18px;
     box-shadow: 
-      inset 0 0 20px rgba(0,0,0,0.2),
-      0 0 0 15px #8b4513,
-      0 0 0 17px #654321,
-      0 0 0 20px #a0522d,
-      0 5px 15px rgba(0,0,0,0.5);
+      inset 0 0 18px rgba(0,0,0,0.2),
+      0 0 0 12px #8b4513,
+      0 0 0 14px #654321,
+      0 0 0 16px #a0522d,
+      0 4px 12px rgba(0,0,0,0.5);
   }
 
   .blackjack-text {
@@ -244,87 +434,66 @@
   }
 
   .dealer-must-text {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .insurance-text {
-    font-size: 11px;
+    font-size: 10px;
   }
 
   .dealer-area {
-    top: 20px;
+    top: 18px;
   }
 
   .dealer-label {
     font-size: 14px;
-    margin-bottom: 10px;
-  }
-
-  .player-area {
-    bottom: 80px;
-  }
-}
-
-@media (max-width: 480px) {
-  .table-container {
-    padding-top: 20px;
-  }
-
-  .table-frame {
-    width: 100%;
-    height: 400px;
-    margin: 0;
-  }
-
-  .table-surface {
-    padding: 15px;
-    /* Jeszcze cieńsza ramka dla małych ekranów */
-    box-shadow: 
-      inset 0 0 15px rgba(0,0,0,0.2),
-      0 0 0 10px #8b4513,
-      0 0 0 12px #654321,
-      0 0 0 15px #a0522d,
-      0 5px 10px rgba(0,0,0,0.5);
-  }
-
-  .blackjack-text {
-    font-size: 20px;
-  }
-
-  .pays-text {
-    font-size: 10px;
-  }
-
-  .dealer-must-text {
-    font-size: 9px;
-  }
-
-  .insurance-text {
-    font-size: 9px;
-  }
-
-  .dealer-area {
-    top: 15px;
-  }
-
-  .dealer-label {
-    font-size: 12px;
     margin-bottom: 8px;
   }
 
-  .player-area {
-    bottom: 60px;
+  .player-spots {
+    bottom: 25px;
+  }
+
+  .player-spot {
+    width: 60px;
+    height: 60px;
+    margin: 0 5px;
+  }
+
+  .player-spots .player-spot:first-child,
+  .player-spots .player-spot:last-child {
+    margin-bottom: 12px;
+  }
+
+  .player-spots .player-spot:nth-child(2) {
+    margin-bottom: -4px;
+  }
+
+  .spot-number {
+    font-size: 9px;
+    top: -18px;
+    padding: 1px 5px;
+  }
+
+  .vacant-label {
+    font-size: 7px;
+  }
+
+  .bet-amount {
+    font-size: 12px;
+    bottom: -25px;
+    padding: 2px 6px;
   }
 }
 
 /* Orientacja pozioma na telefonach */
 @media (max-height: 480px) and (orientation: landscape) {
   .table-container {
-    padding-top: 10px;
+    padding-top: 15px;
   }
 
   .table-frame {
-    height: 90vh;
+    height: 300px; /* Proporcjonalnie dostosowane */
   }
 
   .table-surface {
@@ -332,14 +501,38 @@
   }
 
   .blackjack-text {
-    font-size: 20px;
+    font-size: 22px;
   }
 
-  .player-area {
-    bottom: 50px;
+  .player-spots {
+    bottom: 20px;
+  }
+
+  .player-spot {
+    width: 55px;
+    height: 55px;
+    margin: 0 4px;
+  }
+
+  .player-spots .player-spot:first-child,
+  .player-spots .player-spot:last-child {
+    margin-bottom: 10px;
+  }
+
+  .player-spots .player-spot:nth-child(2) {
+    margin-bottom: -3px;
   }
 
   .dealer-area {
-    top: 10px;
+    top: 12px;
+  }
+
+  .spot-number {
+    font-size: 8px;
+    top: -16px;
+  }
+
+  .vacant-label {
+    font-size: 6px;
   }
 } 
