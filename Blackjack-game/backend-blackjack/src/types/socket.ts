@@ -6,8 +6,8 @@ export interface ServerToClientEvents {
   
   // Informacja o pozostałym czasie
   'timeUpdate': (data: {
-    type: 'bet' | 'move';
-    playerId: string;
+    type: 'bet' | 'move' | 'gameStart';
+    playerId?: string;
     remainingTime: number;
     totalTime: number;
   }) => void;
