@@ -1,0 +1,153 @@
+.game-lobby {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(ellipse at center, #2c3e50 0%, #1a252f 100%);
+}
+
+.lobby-container {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  color: #fff;
+  min-width: 400px;
+}
+
+.lobby-container h1 {
+  color: #FFD700;
+  font-size: 48px;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.buy-in-section {
+  margin-bottom: 30px;
+}
+
+.buy-in-section h2 {
+  color: #fff;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.buy-in-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.buy-in-input input {
+  width: 200px;
+  padding: 10px;
+  font-size: 24px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  color: #FFD700;
+}
+
+.quick-amounts {
+  display: flex;
+  gap: 10px;
+}
+
+.quick-amounts button {
+  padding: 8px 16px;
+  background: rgba(255, 215, 0, 0.2);
+  border: 1px solid #FFD700;
+  border-radius: 5px;
+  color: #FFD700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quick-amounts button:hover {
+  background: rgba(255, 215, 0, 0.3);
+}
+
+.seat-selection {
+  margin-bottom: 30px;
+}
+
+.seat-selection h2 {
+  color: #fff;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.seats {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.seat {
+  padding: 15px 25px;
+  background: rgba(0, 100, 0, 0.3);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.seat:hover {
+  background: rgba(0, 100, 0, 0.5);
+  border-color: #FFD700;
+}
+
+.seat.selected {
+  background: rgba(0, 100, 0, 0.8);
+  border-color: #FFD700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.seat.occupied {
+  background: rgba(220, 53, 69, 0.3);
+  border-color: rgba(220, 53, 69, 0.5);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.seat.occupied:hover {
+  background: rgba(220, 53, 69, 0.3);
+  border-color: rgba(220, 53, 69, 0.5);
+  transform: none;
+}
+
+.error-message {
+  color: #ff6b6b;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.play-button {
+  padding: 15px 60px;
+  font-size: 24px;
+  background: #FFD700;
+  border: none;
+  border-radius: 10px;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.play-button:hover:not(:disabled) {
+  background: #ffd900;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+.play-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+} 
