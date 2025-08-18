@@ -1,21 +1,24 @@
 import React from 'react';
 import './Table.css';
 
-interface TableProps {
-  dealerCards: React.ReactNode[];
-  playerCards: React.ReactNode[];
+interface PlayerSpot {
+  id: number;
+  cards: React.ReactNode[];
+  isOccupied: boolean;
+  betAmount?: number;
 }
 
-export const Table: React.FC<TableProps> = ({ dealerCards, playerCards }) => {
+interface TableProps {
+  dealerCards: React.ReactNode[];
+  playerSpots: PlayerSpot[];
+}
+
+export const Table: React.FC<TableProps> = ({ dealerCards, playerSpots }) => {
   return (
     <div className="table-container">
-      {/* Drewniana obramówka */}
       <div className="table-frame">
-        
-        {/* Zielony filc stołu */}
         <div className="table-surface">
-          
-          {/* Obszar krupiera */}
+          {/* Dealer area */}
           <div className="dealer-area">
             <div className="dealer-label">DEALER</div>
             <div className="dealer-cards">
@@ -23,7 +26,7 @@ export const Table: React.FC<TableProps> = ({ dealerCards, playerCards }) => {
             </div>
           </div>
 
-          {/* Napisy na stole */}
+          {/* Table text */}
           <div className="table-text">
             <div className="blackjack-text">BLACKJACK</div>
             <div className="pays-text">PAYS 3 TO 2</div>
@@ -31,13 +34,23 @@ export const Table: React.FC<TableProps> = ({ dealerCards, playerCards }) => {
             <div className="insurance-text">INSURANCE PAYS 2 TO 1</div>
           </div>
 
-          {/* Obszar gracza */}
-          <div className="player-area">
+          {/* Player spots */}
+          <div className="player-spots">
+            {playerSpots.map((spot) => (
+              <div key={spot.id} className={`player-spot ${spot.isOccupied ? 'occupied' : 'vacant'}`}>
+                <div className="spot-number">SEAT {spot.id}</div>
             <div className="player-cards">
-              {playerCards}
+                  {spot.cards}
+                </div>
+                {spot.betAmount && (
+                  <div className="bet-amount">${spot.betAmount}</div>
+                )}
+                {!spot.isOccupied && (
+                  <div className="vacant-label">VACANT</div>
+                )}
             </div>
+            ))}
           </div>
-
         </div>
       </div>
     </div>
