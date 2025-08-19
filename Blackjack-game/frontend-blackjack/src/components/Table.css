@@ -77,7 +77,7 @@
   transform: translateX(-50%);
   text-align: center;
   width: 100%;
-  z-index: 10;
+  z-index: 2; /* Niżej niż karty, ale wyżej niż napisy na stole */
 }
 
 .dealer-label {
@@ -90,9 +90,24 @@
 
 .dealer-cards {
   display: flex;
-  gap: -20px;
   justify-content: center;
+  align-items: center; /* Wyrównaj karty w pionie */
+  position: relative;
 }
+
+.dealer-cards .card {
+  position: relative;
+}
+
+.dealer-cards .card:not(:first-child) {
+  margin-left: -100px; /* Takie samo nakładanie jak u gracza */
+}
+
+.dealer-cards .card:nth-child(1) { z-index: 5; }
+.dealer-cards .card:nth-child(2) { z-index: 6; }
+.dealer-cards .card:nth-child(3) { z-index: 7; }
+.dealer-cards .card:nth-child(4) { z-index: 8; }
+.dealer-cards .card:nth-child(5) { z-index: 9; }
 
 /* Napisy na stole */
 .table-text {
@@ -101,42 +116,46 @@
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
-  z-index: 10;
+  z-index: 1; /* Niżej niż karty - jak namalowane na stole */
 }
 
 .blackjack-text {
-  color: #FFD700;
+  color: rgba(255, 215, 0, 0.4); /* Przygaszony złoty */
   font-size: 36px; /* Zwiększone z 32px */
   font-weight: bold;
-  text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Delikatniejszy cień */
   letter-spacing: 4px;
   margin-bottom: 8px; /* Zwiększone z 6px */
+  opacity: 0.6; /* Dodatkowe przygaszenie */
 }
 
 .pays-text {
-  color: #FFD700;
+  color: rgba(255, 215, 0, 0.3); /* Jeszcze bardziej przygaszony */
   font-size: 16px; /* Zwiększone z 14px */
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Bardzo delikatny cień */
   letter-spacing: 2px;
   margin-bottom: 12px; /* Zwiększone z 10px */
+  opacity: 0.5; /* Mocne przygaszenie */
 }
 
 .dealer-must-text {
-  color: #FFFFFF;
+  color: rgba(255, 255, 255, 0.4); /* Przygaszony biały */
   font-size: 14px; /* Zwiększone z 12px */
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* Delikatniejszy cień */
   letter-spacing: 1px;
   margin-bottom: 10px; /* Zwiększone z 8px */
+  opacity: 0.5; /* Dodatkowe przygaszenie */
 }
 
 .insurance-text {
-  color: #FFD700;
+  color: rgba(255, 215, 0, 0.3); /* Przygaszony złoty */
   font-size: 14px; /* Zwiększone z 12px */
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Delikatny cień */
   letter-spacing: 1px;
+  opacity: 0.5; /* Przygaszenie */
 }
 
 
@@ -154,12 +173,29 @@
 
 .player-cards {
   display: flex;
-  gap: -15px;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
-  max-width: 75px; /* Zmniejszone z 90px */
+  flex-wrap: nowrap; /* Nie pozwól na zawijanie - karty obok siebie */
+  position: absolute;
+  top: -120px; /* Przesuń karty nad kółko */
+  left: 50%;
+  transform: translateX(-50%);
+  /* Usunięte max-width ograniczenie */
 }
+
+.player-cards .card {
+  position: relative;
+}
+
+.player-cards .card:not(:first-child) {
+  margin-left: -100px; /* Jeszcze większe nakładanie żeby karty bardziej nachodziły na siebie */
+}
+
+.player-cards .card:nth-child(1) { z-index: 5; }
+.player-cards .card:nth-child(2) { z-index: 6; }
+.player-cards .card:nth-child(3) { z-index: 7; }
+.player-cards .card:nth-child(4) { z-index: 8; }
+.player-cards .card:nth-child(5) { z-index: 9; }
 
 /* Obszary graczy */
 .player-spots {
@@ -171,6 +207,7 @@
   display: flex;
   justify-content: space-around;
   align-items: flex-end;
+  z-index: 3; /* Niżej niż karty, wyżej niż napisy */
 }
 
 /* Przesuwamy miejsca 1 i 3 do góry, a miejsce 2 zostawiamy niżej */
@@ -266,6 +303,7 @@
 
   .blackjack-text {
     font-size: 34px;
+    opacity: 0.5; /* Jeszcze bardziej przygaszony na mniejszych ekranach */
   }
 
   .player-spot {
@@ -290,6 +328,7 @@
 
   .blackjack-text {
     font-size: 32px;
+    opacity: 0.4; /* Mocno przygaszony na średnich ekranach */
   }
 
   .pays-text {
@@ -354,6 +393,7 @@
 
   .blackjack-text {
     font-size: 28px;
+    opacity: 0.3; /* Bardzo przygaszony na małych ekranach */
   }
 
   .pays-text {
