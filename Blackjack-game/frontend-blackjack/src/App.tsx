@@ -11,6 +11,7 @@ interface GameState {
   playerSeat: number | null;
   balance: number;
   occupiedSeats: number[];
+  gameData?: any; // Pełny stan gry z serwera
 }
 
 function App() {
@@ -19,7 +20,8 @@ function App() {
     playerId: null,
     playerSeat: null,
     balance: 0,
-    occupiedSeats: []
+    occupiedSeats: [],
+    gameData: null
   });
 
   const [isInitialized, setIsInitialized] = useState(false);
@@ -27,7 +29,8 @@ function App() {
   const initializationRef = useRef(false); // 🔥 GUARD przeciwko wielokrotnym inicjalizacjom
 
   const updateGameState = useCallback((newState: any) => {
-    console.log('updateGameState called with:', newState); // 🔥 DEBUG
+    console.log(`🔥 updateGameState: ${newState.state}, players: ${newState.players?.length}, game: ${newState.id}`);
+    
     const occupiedSeats = newState.players
       .filter((p: any) => !p.isDealer)
       .map((p: any) => p.seatNumber)
@@ -35,9 +38,11 @@ function App() {
 
     setGameState(prev => ({
       ...prev,
-      occupiedSeats
+      occupiedSeats,
+      // ✅ Zachowaj pełny stan gry dla dalszego użycia
+      gameData: newState
     }));
-  }, []); // 🔥 Sprawdź czy naprawdę nie ma dependencies
+  }, []);
 
   useEffect(() => {
     // 🔥 GUARD - zapobiega wielokrotnym inicjalizacjom
@@ -59,8 +64,17 @@ function App() {
         socketService.onGameState(updateGameState);
 
         socketService.onNotification((message) => {
-          console.log('Game notification:', message);
+          console.log('📢 Game notification:', message);
           // TODO: Dodać wyświetlanie powiadomień
+        });
+
+        // Obsługa timeUpdate events (bez logowania - za dużo spamu)
+        socketService.onTimeUpdate((data) => {
+          // Loguj tylko kluczowe momenty (ostatnie 5 sekund)
+          if (data.remainingTime <= 5000 && data.remainingTime % 1000 < 100) {
+            console.log(`⏰ ${data.type} countdown: ${Math.ceil(data.remainingTime / 1000)}s`);
+          }
+          // TODO: Wyświetl timer w UI jeśli potrzebne
         });
 
         if (mounted) {
@@ -101,14 +115,18 @@ function App() {
 
   const handleJoinGame = async (buyIn: number, selectedSeat: number) => {
     try {
+      console.log(`🎯 Starting join process for seat ${selectedSeat} with balance ${buyIn}`);
+      
       // Sprawdź czy socket jest połączony PRZED join
       if (!socketService.isConnected()) {
         throw new Error('Połączenie z serwerem zostało utracone. Spróbuj odświeżyć stronę.');
       }
       
       const player = await socketService.joinGameWithSeat(selectedSeat, buyIn);
+      console.log(`✅ Successfully joined as player:`, player);
       
       setGameState(prev => ({
+        ...prev,
         isPlaying: true,
         playerId: player.id,
         playerSeat: selectedSeat,
@@ -116,7 +134,8 @@ function App() {
         occupiedSeats: [...prev.occupiedSeats, selectedSeat]
       }));
 
-      socketService.joinGame(player.id);
+      // ❌ USUNIĘTE: socketService.joinGame(player.id) - już wywołane w joinGameWithSeat
+      console.log(`🎮 Game state updated, player should now see the game`);
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
