@@ -178,3 +178,121 @@ h1 {
     padding: 5px;
   }
 }
+
+/* Player info section styling */
+.player-info-section {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(145deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%);
+  border-radius: 12px;
+  padding: 12px 20px;
+  border: 2px solid rgba(255,215,0,0.3);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+  z-index: 50;
+}
+
+.hand-info {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  font-family: 'Georgia', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.hand-info span {
+  white-space: nowrap;
+}
+
+.hand-info .special {
+  color: #FFD700;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(255,215,0,0.5);
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+  to { text-shadow: 0 0 20px rgba(255,215,0,0.8), 0 0 30px rgba(255,215,0,0.4); }
+}
+
+/* Enhanced game status styling */
+.game-status {
+  background: linear-gradient(145deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%);
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Timer styling */
+.timer {
+  background: linear-gradient(145deg, #dc3545 0%, #c82333 100%);
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  border: 2px solid rgba(255,255,255,0.2);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 5px rgba(220,53,69,0.5); }
+  50% { box-shadow: 0 0 15px rgba(220,53,69,0.8); }
+  100% { box-shadow: 0 0 5px rgba(220,53,69,0.5); }
+}
+
+/* Betting section styling */
+.betting-section {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(145deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 100%);
+  border-radius: 12px;
+  padding: 20px;
+  border: 2px solid rgba(255,215,0,0.4);
+  text-align: center;
+  z-index: 100;
+}
+
+.betting-section h3 {
+  color: #FFD700;
+  margin-bottom: 15px;
+  font-family: 'Georgia', serif;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.bet-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.bet-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #28a745 0%, #20c997 100%);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.bet-buttons button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  background: linear-gradient(145deg, #20c997 0%, #28a745 100%);
+}
