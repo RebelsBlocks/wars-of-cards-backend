@@ -37,6 +37,7 @@ class SocketService {
   private timeUpdateCallback: ServerToClientEvents['timeUpdate'] | null = null;
   private isInitializing = false; // 🔥 DODAJ TEN GUARD
   private isInitialized = false;  // 🔥 I TEN TEŻ
+  private isIntentionalDisconnect = false; // 🔥 NOWA FLAGA dla celowego disconnect
 
   constructor() {
     const savedGameId = localStorage.getItem(GAME_ID_STORAGE_KEY);
@@ -61,8 +62,16 @@ class SocketService {
       // Wyczyść istniejące połączenie jeśli istnieje
       if (this.socket) {
         console.log('Disconnecting existing socket connection');
+        // Usuń wszystkie listenery przed disconnect
+        this.socket.removeAllListeners();
+        // Oznacz jako celowy disconnect
+        this.isIntentionalDisconnect = true;
         this.socket.disconnect();
         this.socket = null;
+        // Reset flagi po krótkiej chwili
+        setTimeout(() => {
+          this.isIntentionalDisconnect = false;
+        }, 100);
       }
 
       // Sprawdź czy już nie ma timera reconnection
@@ -74,7 +83,8 @@ class SocketService {
       // Reset reconnection attempts
       this.reconnectAttempts = 0;
 
-      await this.ensureGameExists();
+      // ❌ Usuń ensureGameExists - gra będzie tworzona dopiero przy join
+      // await this.ensureGameExists();
 
       this.socket = socketIO(SOCKET_URL, {
         reconnection: true,
@@ -138,6 +148,19 @@ class SocketService {
     this.socket.on('disconnect', (reason: string) => {
       console.log('Disconnected from WebSocket server:', reason);
       this.isInitialized = false;
+      
+      // Jeśli to celowy disconnect, nie próbuj reconnectować
+      if (this.isIntentionalDisconnect) {
+        console.log('Intentional disconnect, skipping reconnection');
+        return;
+      }
+      
+      // Nie reconnectuj jeśli disconnect jest przez server restart lub transport close
+      if (reason === 'io server disconnect' || reason === 'io client disconnect') {
+        console.log('Server initiated disconnect, not attempting reconnection');
+        return;
+      }
+      
       this.handleConnectionError();
     });
 
@@ -160,8 +183,8 @@ class SocketService {
   }
 
   private handleConnectionError() {
-    if (this.isInitializing) {
-      return; // Nie rób nic jeśli już inicjalizujemy
+    if (this.isInitializing || this.isIntentionalDisconnect) {
+      return; // Nie rób nic jeśli już inicjalizujemy lub to celowy disconnect
     }
 
     if (this.reconnectAttempts >= RECONNECTION_ATTEMPTS) {
@@ -195,85 +218,29 @@ class SocketService {
     }, RECONNECTION_DELAY);
   }
 
-  private async ensureGameExists() {
-    try {
-      // KROK 1: Sprawdź czy mamy już konkretną grę w localStorage
-      if (this.gameId !== 'default-game') {
-        console.log('Checking if stored game exists:', this.gameId);
-        const response = await fetch(`${SOCKET_URL}/api/games/${this.gameId}`);
-        if (response.ok) {
-          const game = await response.json();
-          const playerCount = game.players.filter((p: any) => !p.isDealer).length;
-          if (playerCount < 3) { // Sprawdź czy są wolne miejsca
-            console.log('Using existing stored game with free spots:', this.gameId);
-            return;
-          } else {
-            console.log('Stored game is full, looking for other available games');
-            // Gra pełna - wyczyść z localStorage i szukaj innej
-            localStorage.removeItem(GAME_ID_STORAGE_KEY);
-            this.gameId = 'default-game';
-          }
-        } else {
-          // Gra nie istnieje - wyczyść localStorage
-          console.log('Stored game not found, clearing localStorage');
-          localStorage.removeItem(GAME_ID_STORAGE_KEY);
-          this.gameId = 'default-game';
-        }
-      }
-
-      // KROK 2: Szukaj JAKIEJKOLWIEK dostępnej gry z wolnymi miejscami
-      console.log('Looking for any available game...');
-      const availableResponse = await fetch(`${SOCKET_URL}/api/games/available`);
-      if (availableResponse.ok) {
-        const availableGame = await availableResponse.json();
-        if (availableGame) {
-          this.gameId = availableGame.id;
-          localStorage.setItem(GAME_ID_STORAGE_KEY, this.gameId);
-          console.log('Found and joined available game:', this.gameId);
-          return; // Używamy istniejącej gry
-        }
-      }
-
-      // KROK 3: Jeśli brak dostępnych gier - DOPIERO WTEDY twórz nową
-      console.log('No available games found, creating new game...');
-      const createResponse = await fetch(`${SOCKET_URL}/api/games`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (createResponse.ok) {
-        const gameData = await createResponse.json();
-        this.gameId = gameData.id;
-        localStorage.setItem(GAME_ID_STORAGE_KEY, this.gameId);
-        console.log('Created new game with ID:', this.gameId);
-      } else {
-        throw new Error('Failed to create game');
-      }
-    } catch (error) {
-      console.error('Error ensuring game exists:', error);
-      // Wyczyść localStorage przy błędzie i reset do default
-      localStorage.removeItem(GAME_ID_STORAGE_KEY);
-      this.gameId = 'default-game';
-      throw error;
-    }
-  }
+  // ❌ Usunięto ensureGameExists - teraz gra jest tworzona atomowo przy join
 
   private emit<K extends keyof EmitEvents>(
     event: K,
     ...args: Parameters<EmitEvents[K]>
   ) {
     if (!this.socket?.connected) {
-      console.warn('Socket not connected, attempting to reconnect...');
-      this.initialize().catch(console.error);
+      console.warn('Socket not connected. Cannot emit event:', event);
+      // ❌ Usuń automatyczny initialize() - to powodowało cascade
+      // this.initialize().catch(console.error);
       return;
     }
     this.socket.emit(event, ...args);
   }
 
   joinGame(playerId: string) {
+    console.log(`🔌 Attempting to join WebSocket room - gameId: ${this.gameId}, playerId: ${playerId}`);
+    if (!this.socket?.connected) {
+      console.warn(`❌ Cannot join room - socket not connected`);
+      return;
+    }
     this.emit('joinGame', this.gameId, playerId);
+    console.log(`✅ WebSocket joinGame event sent`);
   }
 
   leaveGame(playerId: string) {
@@ -284,35 +251,70 @@ class SocketService {
     return this.socket?.connected || false;
   }
 
-  async joinGameWithSeat(seatNumber: number, initialBalance: number): Promise<any> {
+  async joinGameWithSeat(seatNumber: number, initialBalance: number, maxRetries: number = 3): Promise<any> {
     // Zatrzymaj reconnection gdy user próbuje join
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
 
-    try {
-      const response = await fetch(`${SOCKET_URL}/api/games/${this.gameId}/join`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          seatNumber,
-          initialBalance
-        }),
-      });
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Join attempt ${attempt}/${maxRetries} for seat ${seatNumber}`);
+        
+        // Użyj nowego atomowego endpointu
+        const response = await fetch(`${SOCKET_URL}/api/games/join-or-create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ seatNumber, initialBalance })
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to join game');
+        if (!response.ok) {
+          const errorData = await response.json();
+          
+          // Jeśli "Gra nie istnieje" lub "miejsce zajęte" - retry
+          if ((errorData.error.includes('nie istnieje') || 
+               errorData.error.includes('zajęte') ||
+               errorData.error.includes('full') ||
+               errorData.error.includes('pełny')) && 
+               attempt < maxRetries) {
+            console.log(`Attempt ${attempt} failed: ${errorData.error}, retrying...`);
+            await new Promise(resolve => setTimeout(resolve, 500)); // 500ms delay
+            continue;
+          }
+          
+          throw new Error(errorData.error || 'Failed to join game');
+        }
+
+        const result = await response.json();
+        
+        // Zaktualizuj gameId
+        this.gameId = result.game.id;
+        localStorage.setItem(GAME_ID_STORAGE_KEY, this.gameId);
+        
+        // ✅ KLUCZOWE: Dołącz do WebSocket room PRZED return
+        console.log(`Joining WebSocket room for player ${result.player.id} in game ${this.gameId}`);
+        this.joinGame(result.player.id);
+        
+        // ✅ Daj więcej czasu na połączenie WebSocket i synchronizację
+        console.log(`Waiting for WebSocket synchronization...`);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        console.log(`Successfully joined game ${this.gameId} as player ${result.player.id}`);
+        return result.player;
+        
+      } catch (error) {
+        console.log(`Join attempt ${attempt} failed:`, error);
+        if (attempt === maxRetries) {
+          console.error('All join attempts failed');
+          throw error; // Ostatnia próba - rzuć błąd
+        }
+        
+        // Delay przed następną próbą (tylko jeśli to nie ostatnia próba)
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+        }
       }
-
-      const player = await response.json();
-      return player;
-    } catch (error) {
-      console.error('Error joining game:', error);
-      throw error;
     }
   }
 
@@ -380,16 +382,52 @@ class SocketService {
       this.reconnectTimer = null;
     }
     if (this.socket) {
+      // Usuń wszystkie listenery przed disconnect
+      this.socket.removeAllListeners();
+      // Oznacz jako celowy disconnect
+      this.isIntentionalDisconnect = true;
       this.socket.disconnect();
       this.socket = null;
     }
     this.reconnectAttempts = 0;
     this.isInitializing = false;
     this.isInitialized = false;
+    // Reset flagi po disconnect
+    setTimeout(() => {
+      this.isIntentionalDisconnect = false;
+    }, 100);
   }
 
   getGameId(): string {
     return this.gameId;
+  }
+
+  // Publiczna metoda do bezpiecznego restartu połączenia
+  async reconnect(): Promise<void> {
+    console.log('Manual reconnection requested');
+    
+    // Zatrzymaj automatyczne reconnection
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    
+    // Reset licznika prób
+    this.reconnectAttempts = 0;
+    
+    // Wykonaj ponowną inicjalizację
+    try {
+      await this.initialize();
+      console.log('Manual reconnection successful');
+    } catch (error) {
+      console.error('Manual reconnection failed:', error);
+      throw error;
+    }
+  }
+
+  // Metoda sprawdzająca czy jest w trakcie reconnection
+  isReconnecting(): boolean {
+    return this.reconnectTimer !== null || this.isInitializing;
   }
 }
 
