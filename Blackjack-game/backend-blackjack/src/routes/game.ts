@@ -36,6 +36,51 @@ export function createGameRouter(gameService: GameService) {
     }
   });
 
+  // Atomowy endpoint: znajdź/utwórz grę i od razu dołącz
+  router.post('/games/join-or-create', (req, res) => {
+    try {
+      const { seatNumber, initialBalance } = req.body;
+      
+      console.log('Join-or-create request received:', { 
+        seatNumber, 
+        initialBalance,
+        body: req.body 
+      });
+      
+      if (!seatNumber || seatNumber < 1 || seatNumber > 3) {
+        console.error('Invalid seat number:', seatNumber);
+        return res.status(400).json({ error: 'Nieprawidłowy numer miejsca (1-3)' });
+      }
+      
+      // 1. Spróbuj znaleźć dostępną grę
+      let game = gameService.findAvailableGame();
+      
+      // 2. Jeśli brak - utwórz nową
+      if (!game) {
+        console.log('No available game found, creating new game...');
+        game = gameService.createGame();
+      } else {
+        console.log('Found available game:', game.id);
+      }
+      
+      // 3. Od razu dołącz gracza (atomowo)
+      const player = gameService.joinGame(game.id, seatNumber, initialBalance);
+      
+      console.log('Player joined successfully:', player.id, 'to game:', game.id);
+      res.status(200).json({ 
+        game: game,
+        player: player 
+      });
+    } catch (error) {
+      console.error('Join-or-create error:', error);
+      if (error instanceof Error) {
+        res.status(400).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'Nie udało się dołączyć do gry' });
+      }
+    }
+  });
+
   // Dołączenie do gry
   router.post('/games/:gameId/join', (req, res) => {
     try {
