@@ -1,4 +1,4 @@
-import { GameState, PlayerMove, GameSession, Player, Card, Hand } from '../types/game';
+import { GameState, PlayerMove, GameSession, Player, Card, Hand, PlayerState } from '../types/game';
 import { Server } from 'socket.io';
 import { ServerToClientEvents, ClientToServerEvents, InterServerEvents, SocketData } from '../types/socket';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,20 +10,22 @@ type GameStateForClient = Omit<GameSession, 'occupiedSeats'> & {
 
 export class GameService {
   private games: Map<string, GameSession> = new Map();
+  private gameStartTimers: Map<string, NodeJS.Timeout> = new Map(); // Mapa timerów startowych dla każdej gry
   private readonly MAX_PLAYERS = 3; // Maksymalna liczba graczy przy stole (nie licząc dealera)
   private readonly MOVE_TIMEOUT = 30000;  // 30 sekund na ruch
   private readonly BET_TIMEOUT = 45000;   // 45 sekund na postawienie zakładu
-  private readonly GAME_START_TIMEOUT = 45000; // 45 sekund na start gry
+  private readonly GAME_START_TIMEOUT = 20000; // 20 sekund na start gry (skrócone)
+  private readonly ROUND_BREAK_TIMEOUT = 5000; // 5 sekund przerwy między rundami
   private readonly TIME_UPDATE_INTERVAL = 1000; // Co ile ms wysyłać aktualizacje czasu
   private readonly PLAYER_TIMEOUT = 60000; // 60 sekund na usunięcie nieaktywnego gracza
 
   constructor(
     private io: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
   ) {
-    // Uruchom czyszczenie co 30 sekund
+    // Uruchom czyszczenie co 60 sekund (zmniejszona częstotliwość)
     setInterval(() => {
       this.cleanupDisconnectedPlayers();
-    }, 30000);
+    }, 60000);
   }
 
   // Tworzenie nowej gry
@@ -62,10 +64,6 @@ export class GameService {
   public joinGame(gameId: string, seatNumber: number, initialBalance: number = 1000): Player {
     const game = this.getGame(gameId);
     if (!game) throw new Error('Gra nie istnieje');
-    
-    if (game.state !== GameState.WAITING_FOR_PLAYERS) {
-      throw new Error('Nie można dołączyć do rozpoczętej gry');
-    }
 
     // Sprawdzenie czy miejsce jest już zajęte
     if (game.occupiedSeats.has(seatNumber)) {
@@ -83,6 +81,14 @@ export class GameService {
       throw new Error(`Stół jest pełny. Maksymalna liczba graczy: ${this.MAX_PLAYERS}`);
     }
 
+    // Określ stan gracza w zależności od stanu gry
+    let playerState = PlayerState.ACTIVE;
+    if (game.state === GameState.PLAYER_TURN || 
+        game.state === GameState.DEALER_TURN || 
+        game.state === GameState.BETTING) {
+      playerState = PlayerState.WAITING_FOR_NEXT_ROUND;
+    }
+
     const player: Player = {
       id: uuidv4(),
       hands: [{
@@ -95,7 +101,8 @@ export class GameService {
       balance: initialBalance,
       isDealer: false,
       seatNumber: seatNumber,
-      currentHandIndex: 0
+      currentHandIndex: 0,
+      state: playerState
     };
 
     // Dodaj znacznik czasu aktywności
@@ -104,13 +111,20 @@ export class GameService {
     game.players.push(player);
     game.occupiedSeats.add(seatNumber);
 
-    // Jeśli to pierwszy gracz, rozpocznij odliczanie do startu gry
-    if (playerCount === 0) {
+    // Jeśli to pierwszy gracz i gra czeka na graczy, rozpocznij odliczanie
+    if (playerCount === 0 && game.state === GameState.WAITING_FOR_PLAYERS) {
       this.startGameCountdown(game);
     }
 
     this.broadcastGameState(game);
-    this.io.to(gameId).emit('notification', `Gracz dołączył do miejsca ${seatNumber}.`);
+    
+    if (playerState === PlayerState.WAITING_FOR_NEXT_ROUND) {
+      this.io.to(gameId).emit('notification', 
+        `Gracz dołączył do miejsca ${seatNumber}. Zagra w następnej rundzie.`);
+    } else {
+      this.io.to(gameId).emit('notification', `Gracz dołączył do miejsca ${seatNumber}.`);
+    }
+    
     return player;
   }
 
@@ -119,25 +133,40 @@ export class GameService {
     const game = this.getGame(gameId);
     if (!game) throw new Error('Gra nie istnieje');
     
+    // Wyczyść timer startowy jeśli istnieje (gra się rozpoczyna)
+    this.clearGameStartTimer(gameId);
+    
     game.state = GameState.BETTING;
     game.deck = this.createNewDeck();
+    
+    // Aktywuj wszystkich graczy którzy czekali na rundę
     game.players.forEach(player => {
-      player.hands = [{
-        cards: [],
-        bet: 0,
-        isFinished: false,
-        hasDoubled: false,
-        hasSplit: false
-      }];
-      player.currentHandIndex = 0;
+      if (!player.isDealer && player.state === PlayerState.WAITING_FOR_NEXT_ROUND) {
+        player.state = PlayerState.ACTIVE;
+        this.io.to(gameId).emit('notification', 
+          `Gracz z miejsca ${player.seatNumber} dołącza do gry!`);
+      }
+      
+      // Reset tylko dla aktywnych graczy
+      if (!player.isDealer && player.state === PlayerState.ACTIVE) {
+        player.hands = [{
+          cards: [],
+          bet: 0,
+          isFinished: false,
+          hasDoubled: false,
+          hasSplit: false
+        }];
+        player.currentHandIndex = 0;
+      }
+      
       // Usuń stare timeouty jeśli istnieją
       if (player.moveTimeoutId) clearTimeout(player.moveTimeoutId);
       if (player.betTimeoutId) clearTimeout(player.betTimeoutId);
     });
 
-    // Ustaw timeouty na zakłady dla wszystkich graczy
+    // Ustaw timeouty na zakłady tylko dla aktywnych graczy
     game.players
-      .filter(p => !p.isDealer)
+      .filter(p => !p.isDealer && p.state === PlayerState.ACTIVE)
       .forEach(player => this.startBetTimeout(game, player));
 
     this.broadcastGameState(game);
@@ -152,6 +181,7 @@ export class GameService {
     
     const player = this.findPlayer(game, playerId);
     if (!player) throw new Error('Gracz nie istnieje');
+    if (player.state !== PlayerState.ACTIVE) throw new Error('Gracz nie jest aktywny w tej rundzie');
     
     if (player.balance < amount) throw new Error('Niewystarczające środki');
     
@@ -163,10 +193,9 @@ export class GameService {
     player.hands[0].bet = amount;
     player.balance -= amount;
 
-    // Sprawdź czy wszyscy gracze postawili zakłady
-    const allBetsPlaced = game.players
-      .filter(p => !p.isDealer)
-      .every(p => p.hands.every(hand => hand.bet > 0));
+    // Sprawdź czy wszyscy aktywni gracze postawili zakłady
+    const activePlayers = game.players.filter(p => !p.isDealer && p.state === PlayerState.ACTIVE);
+    const allBetsPlaced = activePlayers.every(p => p.hands.every(hand => hand.bet > 0));
 
     if (allBetsPlaced) {
       this.dealInitialCards(game);
@@ -191,6 +220,7 @@ export class GameService {
     
     const player = this.findPlayer(game, playerId);
     if (!player) throw new Error('Gracz nie istnieje');
+    if (player.state !== PlayerState.ACTIVE) throw new Error('Gracz nie jest aktywny w tej rundzie');
     
     if (game.state !== GameState.PLAYER_TURN) {
       throw new Error('Niedozwolony ruch w tym momencie gry');
@@ -230,6 +260,7 @@ export class GameService {
 
     const player = this.findPlayer(game, playerId);
     if (!player) throw new Error('Gracz nie istnieje');
+    if (player.state !== PlayerState.ACTIVE) throw new Error('Gracz nie jest aktywny w tej rundzie');
 
     // Wyczyść timeout dla tego gracza
     if (player.moveTimeoutId) {
@@ -251,6 +282,7 @@ export class GameService {
     
     const player = this.findPlayer(game, playerId);
     if (!player) throw new Error('Gracz nie istnieje');
+    if (player.state !== PlayerState.ACTIVE) throw new Error('Gracz nie jest aktywny w tej rundzie');
     
     if (game.state !== GameState.PLAYER_TURN || player.hands[player.currentHandIndex || 0].cards.length !== 2) {
       throw new Error('Podwojenie możliwe tylko na początku tury');
@@ -279,6 +311,7 @@ export class GameService {
     
     const player = this.findPlayer(game, playerId);
     if (!player) throw new Error('Gracz nie istnieje');
+    if (player.state !== PlayerState.ACTIVE) throw new Error('Gracz nie jest aktywny w tej rundzie');
 
     const currentHand = player.hands[player.currentHandIndex || 0];
     
@@ -347,11 +380,10 @@ export class GameService {
       const playerCount = game.players.filter(p => !p.isDealer).length;
       console.log(`Game ${game.id}: state=${game.state}, players=${playerCount}/${this.MAX_PLAYERS}`);
       
-      if (game.state === GameState.WAITING_FOR_PLAYERS) {
-        if (playerCount < this.MAX_PLAYERS) {
-          console.log(`Found available game: ${game.id} with ${playerCount} players`);
-          return game; // Znaleziono grę z wolnymi miejscami
-        }
+      // ✅ Pozwól dołączać ZAWSZE gdy jest miejsce (niezależnie od stanu gry)
+      if (playerCount < this.MAX_PLAYERS) {
+        console.log(`Found available game: ${game.id} with ${playerCount} players`);
+        return game; // Znaleziono grę z wolnymi miejscami
       }
     }
     
@@ -439,6 +471,9 @@ export class GameService {
 
   // Nowa metoda do obsługi odliczania do startu gry
   private startGameCountdown(game: GameSession): void {
+    // Anuluj poprzedni timer jeśli istnieje
+    this.clearGameStartTimer(game.id);
+    
     const startTime = Date.now();
     
     // Ustawiamy interwał do aktualizacji pozostałego czasu
@@ -454,8 +489,10 @@ export class GameService {
     }, this.TIME_UPDATE_INTERVAL);
 
     // Ustawiamy timeout na start gry
-    setTimeout(() => {
+    const gameStartTimer = setTimeout(() => {
       clearInterval(updateInterval);
+      this.gameStartTimers.delete(game.id); // Usuń timer z mapy
+      
       const playerCount = game.players.filter(p => !p.isDealer).length;
       
       if (playerCount > 0) {
@@ -470,6 +507,18 @@ export class GameService {
         this.io.to(game.id).emit('notification', 'Brak graczy przy stole.');
       }
     }, this.GAME_START_TIMEOUT);
+
+    // Zapisz timer w mapie
+    this.gameStartTimers.set(game.id, gameStartTimer);
+  }
+
+  // Metoda do anulowania timera startowego
+  private clearGameStartTimer(gameId: string): void {
+    const timer = this.gameStartTimers.get(gameId);
+    if (timer) {
+      clearTimeout(timer);
+      this.gameStartTimers.delete(gameId);
+    }
   }
 
   // Nowa metoda do opuszczenia gry
@@ -500,6 +549,19 @@ export class GameService {
     if (player.moveTimeoutId) clearTimeout(player.moveTimeoutId);
     if (player.betTimeoutId) clearTimeout(player.betTimeoutId);
 
+    // Sprawdź czy to był ostatni gracz (nie licząc dealera)
+    const remainingPlayers = game.players.filter(p => !p.isDealer).length;
+    if (remainingPlayers === 0) {
+      // Anuluj timer startowy jeśli istnieje
+      this.clearGameStartTimer(game.id);
+      
+      // Resetuj stan gry do oczekiwania na graczy
+      if (game.state !== GameState.WAITING_FOR_PLAYERS) {
+        game.state = GameState.WAITING_FOR_PLAYERS;
+        this.io.to(gameId).emit('notification', 'Wszyscy gracze opuścili stół. Oczekiwanie na nowych graczy...');
+      }
+    }
+
     // Powiadom innych graczy
     this.broadcastGameState(game);
     this.io.to(gameId).emit('notification', `Gracz opuścił miejsce ${player.seatNumber || 'nieznane'}.`);
@@ -523,7 +585,8 @@ export class GameService {
         balance: player.balance,
         isDealer: player.isDealer,
         seatNumber: player.seatNumber,
-        currentHandIndex: player.currentHandIndex
+        currentHandIndex: player.currentHandIndex,
+        state: player.state
         // Usuń moveTimeoutId i betTimeoutId - to może powodować circular reference
       })),
       currentPlayerIndex: game.currentPlayerIndex,
@@ -580,14 +643,17 @@ export class GameService {
   }
 
   private dealInitialCards(game: GameSession): void {
+    // Pobierz tylko aktywnych graczy (plus dealer)
+    const activePlayers = game.players.filter(p => p.isDealer || p.state === PlayerState.ACTIVE);
+    
     // Pierwsza runda rozdawania
-    for (const player of game.players) {
+    for (const player of activePlayers) {
       const card = this.drawCard(game);
       player.hands[0].cards.push(card);
     }
 
     // Druga runda rozdawania
-    for (const player of game.players) {
+    for (const player of activePlayers) {
       const card = this.drawCard(game);
       if (player.isDealer) {
         card.isFaceUp = false; // Druga karta dealera zakryta
@@ -602,11 +668,11 @@ export class GameService {
     const dealerHasBlackjack = this.isBlackjack(dealer.hands[0]);
     let someoneHasBlackjack = dealerHasBlackjack;
 
-    // Sprawdzamy graczy
-    for (const player of game.players) {
+    // Sprawdzamy aktywnych graczy
+    for (const player of activePlayers) {
       if (!player.isDealer && this.isBlackjack(player.hands[0])) {
         someoneHasBlackjack = true;
-        this.io.to(game.id).emit('notification', `Gracz ${player.id} ma Blackjacka!`);
+        this.io.to(game.id).emit('notification', `Gracz z miejsca ${player.seatNumber} ma Blackjacka!`);
       }
     }
 
@@ -665,7 +731,7 @@ export class GameService {
     }
 
     // Standardowa logika przejścia do następnego gracza
-    const activePlayers = game.players.filter(p => !p.isDealer);
+    const activePlayers = game.players.filter(p => !p.isDealer && p.state === PlayerState.ACTIVE);
     const currentPlayerIndex = activePlayers.findIndex(p => p.id === currentPlayer.id);
 
     if (currentPlayerIndex === activePlayers.length - 1) {
@@ -754,17 +820,20 @@ export class GameService {
       });
     }
 
-    // Po określeniu zwycięzców, rozpocznij odliczanie do następnej rundy
+    // Po określeniu zwycięzców, automatycznie następna runda jeśli są gracze
     setTimeout(() => {
-      // Sprawdź czy są jeszcze gracze przy stole
-      const remainingPlayers = game.players.filter(p => !p.isDealer).length;
-      if (remainingPlayers > 0) {
+      const totalPlayers = game.players.filter(p => !p.isDealer).length;
+      
+      if (totalPlayers > 0) {
+        // ✅ Ciągłe rundy - krótka przerwa między rundami
+        this.io.to(game.id).emit('notification', 
+          `Następna runda rozpocznie się za ${this.ROUND_BREAK_TIMEOUT / 1000} sekund...`);
         this.startRound(game.id);
       } else {
         game.state = GameState.WAITING_FOR_PLAYERS;
         this.io.to(game.id).emit('notification', 'Oczekiwanie na graczy...');
       }
-    }, this.GAME_START_TIMEOUT);
+    }, this.ROUND_BREAK_TIMEOUT); // 5 sekund przerwy
   }
 
   // Pomocnicza metoda do określania wartości karty
@@ -819,6 +888,8 @@ export class GameService {
       const activePlayers = game.players.filter(p => !p.isDealer);
       if (activePlayers.length === 0 && game.state === GameState.WAITING_FOR_PLAYERS) {
         console.log(`Removing empty game ${gameId}`);
+        // Wyczyść timer startowy przed usunięciem gry
+        this.clearGameStartTimer(gameId);
         this.games.delete(gameId);
       }
     });
