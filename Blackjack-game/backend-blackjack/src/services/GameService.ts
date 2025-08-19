@@ -10,6 +10,30 @@ type GameStateForClient = Omit<GameSession, 'occupiedSeats'> & {
 
 export class GameService {
   private games: Map<string, GameSession> = new Map();
+
+  // Helper function to format card for logging
+  private formatCard(card: Card): string {
+    const suitSymbols: Record<string, string> = {
+      'HEARTS': '♥️',
+      'DIAMONDS': '♦️',
+      'CLUBS': '♣️',
+      'SPADES': '♠️'
+    };
+    const rankDisplay: Record<string, string> = {
+      'ACE': 'A',
+      'JACK': 'J',
+      'QUEEN': 'Q',
+      'KING': 'K'
+    };
+    const rank = rankDisplay[card.rank] || card.rank;
+    const suit = suitSymbols[card.suit] || card.suit;
+    return `${rank}${suit}`;
+  }
+
+  // Helper function to format hand for logging
+  private formatHand(cards: Card[]): string {
+    return cards.map(card => this.formatCard(card)).join(', ');
+  }
   private gameStartTimers: Map<string, NodeJS.Timeout> = new Map(); // Mapa timerów startowych dla każdej gry
   private readonly MAX_PLAYERS = 3; // Maksymalna liczba graczy przy stole (nie licząc dealera)
   private readonly MOVE_TIMEOUT = 30000;  // 30 sekund na ruch
@@ -193,11 +217,14 @@ export class GameService {
     player.hands[0].bet = amount;
     player.balance -= amount;
 
+    console.log(`💰 BET: Player ${player.seatNumber} bets $${amount} (balance: $${player.balance})`);
+
     // Sprawdź czy wszyscy aktywni gracze postawili zakłady
     const activePlayers = game.players.filter(p => !p.isDealer && p.state === PlayerState.ACTIVE);
     const allBetsPlaced = activePlayers.every(p => p.hands.every(hand => hand.bet > 0));
 
     if (allBetsPlaced) {
+      console.log(`🎲 All bets placed! Starting card dealing...`);
       this.dealInitialCards(game);
       game.state = GameState.PLAYER_TURN;
       game.currentTurnStartTime = Date.now();
@@ -233,13 +260,23 @@ export class GameService {
     }
 
     const card = this.drawCard(game);
-    player.hands[player.currentHandIndex || 0].cards.push(card);
+    const handIndex = player.currentHandIndex || 0;
+    player.hands[handIndex].cards.push(card);
+
+    const newHandValue = this.calculateHandValue(player.hands[handIndex].cards);
+    const oldHand = this.formatHand(player.hands[handIndex].cards.slice(0, -1)); // Hand before hit
+    
+    console.log(`🎯 HIT: Player ${player.seatNumber} draws ${this.formatCard(card)}`);
+    console.log(`   Previous hand: [${oldHand}]`);
+    console.log(`   New hand: [${this.formatHand(player.hands[handIndex].cards)}] = ${newHandValue}`);
 
     game.lastMoveTime = Date.now();
 
-    if (this.calculateHandValue(player.hands[player.currentHandIndex || 0].cards) > 21) {
+    if (newHandValue > 21) {
+      console.log(`💥 BUST! Player ${player.seatNumber} went over 21 with ${newHandValue}`);
       this.nextPlayer(game);
     } else {
+      console.log(`✅ Player ${player.seatNumber} is safe with ${newHandValue}`);
       // Ustaw nowy timeout dla tego samego gracza
       this.startMoveTimeout(game, player);
     }
@@ -261,6 +298,11 @@ export class GameService {
     const player = this.findPlayer(game, playerId);
     if (!player) throw new Error('Gracz nie istnieje');
     if (player.state !== PlayerState.ACTIVE) throw new Error('Gracz nie jest aktywny w tej rundzie');
+
+    const handIndex = player.currentHandIndex || 0;
+    const handValue = this.calculateHandValue(player.hands[handIndex].cards);
+    
+    console.log(`✋ STAND: Player ${player.seatNumber} stands with [${this.formatHand(player.hands[handIndex].cards)}] = ${handValue}`);
 
     // Wyczyść timeout dla tego gracza
     if (player.moveTimeoutId) {
@@ -634,31 +676,61 @@ export class GameService {
 
   private drawCard(game: GameSession): Card {
     if (game.deck.length === 0) {
+      console.log('🔄 Deck empty, creating new shuffled deck');
       game.deck = this.createNewDeck();
     }
     const card = game.deck.pop();
     if (!card) throw new Error('Brak kart w talii');
     card.isFaceUp = true;
+    
+    // Optional: Uncomment for very detailed card tracking
+    // console.log(`🃏 Drew card: ${this.formatCard(card)} (${game.deck.length} cards remaining)`);
+    
     return card;
   }
 
   private dealInitialCards(game: GameSession): void {
+    console.log(`🃏 === DEALING INITIAL CARDS FOR GAME ${game.id} ===`);
+    
     // Pobierz tylko aktywnych graczy (plus dealer)
     const activePlayers = game.players.filter(p => p.isDealer || p.state === PlayerState.ACTIVE);
+    console.log(`👥 Active players in game: ${activePlayers.length} (including dealer)`);
     
     // Pierwsza runda rozdawania
+    console.log(`📤 First round of dealing:`);
     for (const player of activePlayers) {
       const card = this.drawCard(game);
       player.hands[0].cards.push(card);
+      
+      if (player.isDealer) {
+        console.log(`🎩 Dealer gets: ${this.formatCard(card)} (face up)`);
+      } else {
+        console.log(`🪑 Player ${player.seatNumber} gets: ${this.formatCard(card)} (face up)`);
+      }
     }
 
     // Druga runda rozdawania
+    console.log(`📤 Second round of dealing:`);
     for (const player of activePlayers) {
       const card = this.drawCard(game);
       if (player.isDealer) {
         card.isFaceUp = false; // Druga karta dealera zakryta
+        console.log(`🎩 Dealer gets: ${this.formatCard(card)} (FACE DOWN)`);
+      } else {
+        console.log(`🪑 Player ${player.seatNumber} gets: ${this.formatCard(card)} (face up)`);
       }
       player.hands[0].cards.push(card);
+    }
+
+    // Show final hands
+    console.log(`🃏 === FINAL INITIAL HANDS ===`);
+    for (const player of activePlayers) {
+      if (player.isDealer) {
+        const visibleCards = player.hands[0].cards.filter(card => card.isFaceUp);
+        console.log(`🎩 Dealer shows: ${this.formatHand(visibleCards)} + [HIDDEN]`);
+      } else {
+        console.log(`🪑 Player ${player.seatNumber}: ${this.formatHand(player.hands[0].cards)} (value: ${this.calculateHandValue(player.hands[0].cards)})`);
+      }
     }
 
     // Sprawdzamy czy któryś z graczy ma Blackjacka
@@ -749,16 +821,31 @@ export class GameService {
   }
 
   private playDealerTurn(game: GameSession): void {
+    console.log(`🎩 === DEALER'S TURN ===`);
+    
     const dealer = game.players.find(p => p.isDealer);
     if (!dealer) throw new Error('Brak dealera w grze');
 
     // Odkryj zakrytą kartę dealera
     dealer.hands.forEach(hand => hand.cards.forEach(card => card.isFaceUp = true));
+    
+    const initialValue = this.calculateHandValue(dealer.hands[0].cards);
+    console.log(`🎩 Dealer reveals hand: [${this.formatHand(dealer.hands[0].cards)}] = ${initialValue}`);
 
     // Dealer dobiera karty dopóki nie ma co najmniej 17 punktów
     while (this.calculateHandValue(dealer.hands[0].cards) < 17) {
       const card = this.drawCard(game);
       dealer.hands[0].cards.push(card);
+      
+      const newValue = this.calculateHandValue(dealer.hands[0].cards);
+      console.log(`🎩 Dealer draws ${this.formatCard(card)} → [${this.formatHand(dealer.hands[0].cards)}] = ${newValue}`);
+    }
+
+    const finalValue = this.calculateHandValue(dealer.hands[0].cards);
+    if (finalValue > 21) {
+      console.log(`💥 Dealer BUSTS with ${finalValue}!`);
+    } else {
+      console.log(`✅ Dealer stands with ${finalValue}`);
     }
 
     this.determineWinners(game);
