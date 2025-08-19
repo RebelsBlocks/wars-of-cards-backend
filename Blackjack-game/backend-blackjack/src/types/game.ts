@@ -14,6 +14,12 @@ export enum PlayerMove {
   SPLIT = 'SPLIT'
 }
 
+export enum PlayerState {
+  WAITING_FOR_NEXT_ROUND = 'WAITING_FOR_NEXT_ROUND', // Nowy gracz czeka na następną rundę
+  ACTIVE = 'ACTIVE',                                  // Gra w rundzie  
+  SITTING_OUT = 'SITTING_OUT'                        // Przerwa na rundę
+}
+
 export interface Card {
   suit: 'HEARTS' | 'DIAMONDS' | 'CLUBS' | 'SPADES';
   rank: 'ACE' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'JACK' | 'QUEEN' | 'KING';
@@ -37,6 +43,7 @@ export interface Player {
   moveTimeoutId?: NodeJS.Timeout;
   betTimeoutId?: NodeJS.Timeout;
   currentHandIndex?: number;
+  state?: PlayerState; // Nowy stan gracza
 }
 
 export interface GameSession {
