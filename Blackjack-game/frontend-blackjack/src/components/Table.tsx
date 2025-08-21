@@ -6,14 +6,16 @@ interface PlayerSpot {
   cards: React.ReactNode[];
   isOccupied: boolean;
   betAmount?: number;
+  handValue?: number;
 }
 
 interface TableProps {
   dealerCards: React.ReactNode[];
+  dealerHandValue?: number;
   playerSpots: PlayerSpot[];
 }
 
-export const Table: React.FC<TableProps> = ({ dealerCards, playerSpots }) => {
+export const Table: React.FC<TableProps> = ({ dealerCards, dealerHandValue, playerSpots }) => {
   return (
     <div className="table-container">
       <div className="table-frame">
@@ -23,6 +25,12 @@ export const Table: React.FC<TableProps> = ({ dealerCards, playerSpots }) => {
             <div className="dealer-label">DEALER</div>
             <div className="dealer-cards">
               {dealerCards}
+              {/* Kółeczko z wartością kart dealera */}
+              {dealerHandValue !== undefined && dealerCards.length > 0 && (
+                <div className="dealer-hand-value-circle">
+                  {dealerHandValue}
+                </div>
+              )}
             </div>
           </div>
 
@@ -39,8 +47,14 @@ export const Table: React.FC<TableProps> = ({ dealerCards, playerSpots }) => {
             {playerSpots.map((spot) => (
               <div key={spot.id} className={`player-spot ${spot.isOccupied ? 'occupied' : 'vacant'}`}>
                 <div className="spot-number">SEAT {spot.id}</div>
-            <div className="player-cards">
+                <div className="player-cards">
                   {spot.cards}
+                  {/* Kółeczko z wartością ręki */}
+                  {spot.isOccupied && spot.handValue !== undefined && spot.cards.length > 0 && (
+                    <div className="hand-value-circle">
+                      {spot.handValue}
+                    </div>
+                  )}
                 </div>
                 {spot.betAmount && (
                   <div className="bet-amount">${spot.betAmount}</div>
@@ -48,7 +62,7 @@ export const Table: React.FC<TableProps> = ({ dealerCards, playerSpots }) => {
                 {!spot.isOccupied && (
                   <div className="vacant-label">VACANT</div>
                 )}
-            </div>
+              </div>
             ))}
           </div>
         </div>
