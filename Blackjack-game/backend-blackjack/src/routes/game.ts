@@ -133,9 +133,34 @@ export function createGameRouter(gameService: GameService) {
       const { gameId } = req.params;
       const { playerId, amount } = req.body;
       
+      console.log('💰 Received bet request:', {
+        gameId,
+        playerId,
+        amount,
+        body: req.body
+      });
+
+      if (!playerId) {
+        console.error('❌ Missing playerId in bet request');
+        return res.status(400).json({ error: 'Brak ID gracza' });
+      }
+
+      if (!amount || amount <= 0) {
+        console.error('❌ Invalid bet amount:', amount);
+        return res.status(400).json({ error: 'Nieprawidłowa kwota zakładu' });
+      }
+
       const game = gameService.placeBet(gameId, playerId, amount);
+      console.log('✅ Bet placed successfully:', {
+        gameId,
+        playerId,
+        amount,
+        gameState: game.state
+      });
+      
       res.status(200).json(game);
     } catch (error) {
+      console.error('❌ Error placing bet:', error);
       if (error instanceof Error) {
         res.status(400).json({ error: error.message });
       } else {
