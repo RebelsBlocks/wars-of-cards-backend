@@ -6,19 +6,14 @@ interface ControlsProps {
   onDouble?: () => void;
   onStay?: () => void;
   onHit?: () => void;
-  betAmount?: number;
 }
 
 export const Controls: React.FC<ControlsProps> = ({
   onSplit,
   onDouble,
   onStay,
-  onHit,
-  betAmount = 0
+  onHit
 }) => {
-  // Formatowanie kwoty zakładu do wyświetlenia (2 miejsca po przecinku)
-  const formattedBet = betAmount.toFixed(2);
-
   return (
     <div className="control-buttons">
       <button 
@@ -35,7 +30,6 @@ export const Controls: React.FC<ControlsProps> = ({
       >
         DOUBLE
       </button>
-      <div className="bet-display">{formattedBet}</div>
       <button 
         className="game-button stay" 
         onClick={onStay}
