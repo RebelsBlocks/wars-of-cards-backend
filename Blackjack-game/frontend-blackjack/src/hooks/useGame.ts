@@ -15,8 +15,19 @@ import {
  */
 export function useGame(gameData: GameSession | null, playerId: string | null): GameInfo {
   return useMemo(() => {
+    console.log('🎮 useGame hook - Input data:', {
+      gameData: gameData ? {
+        state: gameData.state,
+        currentPlayerIndex: gameData.currentPlayerIndex,
+        playersCount: gameData.players.length,
+        id: gameData.id
+      } : null,
+      playerId
+    });
+
     // Wartości domyślne gdy brak danych
     if (!gameData || !playerId) {
+      console.log('⚠️ useGame hook - Missing data, returning default state');
       return {
         currentPlayer: null,
         dealer: null,
@@ -49,6 +60,15 @@ export function useGame(gameData: GameSession | null, playerId: string | null): 
       gameData.players[gameData.currentPlayerIndex]?.id === playerId &&
       currentPlayer?.state === PlayerState.ACTIVE;
 
+    console.log('👀 Turn check:', {
+      state: gameData.state,
+      currentPlayerIndex: gameData.currentPlayerIndex,
+      currentPlayerId: gameData.players[gameData.currentPlayerIndex]?.id,
+      myPlayerId: playerId,
+      playerState: currentPlayer?.state,
+      isMyTurn
+    });
+
     // 3. Obliczenie wartości rąk
     const currentHandIndex = currentPlayer?.currentHandIndex || 0;
     const currentHand = currentPlayer?.hands[currentHandIndex];
@@ -68,6 +88,18 @@ export function useGame(gameData: GameSession | null, playerId: string | null): 
       canDouble: isMyTurn && currentHand ? canDouble(currentHand, currentPlayer?.balance || 0, currentHand.bet) : false,
       canSplit: isMyTurn && currentHand ? canSplit(currentHand) && (currentPlayer?.balance || 0) >= currentHand.bet : false,
     };
+
+    console.log('🎯 Available actions:', {
+      availableActions,
+      conditions: {
+        isMyTurn,
+        playerBusted,
+        playerBlackjack,
+        hasCurrentHand: !!currentHand,
+        handValue: currentHand ? getHandValue(currentHand) : null,
+        balance: currentPlayer?.balance
+      }
+    });
 
     // 6. Status gry
     const gameStatus = getGameStatus(gameData, currentPlayer, isMyTurn, playerBlackjack, playerBusted);
@@ -117,7 +149,7 @@ function getGameStatus(
       if (isMyTurn) {
         if (isBlackjack) return 'Blackjack! Wait for other players';
         if (isBusted) return 'Busted - you went over 21';
-        return 'Your turn - choose action';
+        return 'Your turn';
       }
       
       const currentTurnPlayer = gameData.players[gameData.currentPlayerIndex];
