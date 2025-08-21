@@ -209,9 +209,9 @@ export const api = {
   splitHand: ApiService.splitHand,
   doubleDown: ApiService.doubleDown,
 
-  // Convenience methods for specific moves
+  // Convenience methods for specific moves - wszystkie używają makeMove
   hit: (gameId: string, playerId: string) => ApiService.makeMove(gameId, playerId, PlayerMove.HIT),
   stand: (gameId: string, playerId: string) => ApiService.makeMove(gameId, playerId, PlayerMove.STAND),
-  double: (gameId: string, playerId: string) => ApiService.doubleDown(gameId, playerId),
-  split: (gameId: string, playerId: string) => ApiService.splitHand(gameId, playerId),
+  double: (gameId: string, playerId: string) => ApiService.makeMove(gameId, playerId, PlayerMove.DOUBLE),
+  split: (gameId: string, playerId: string) => ApiService.makeMove(gameId, playerId, PlayerMove.SPLIT),
 };
