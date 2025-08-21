@@ -10,6 +10,7 @@ import { Card } from './components/Card';
 import type { Card as GameCard } from './types/game';
 import { Suit, Rank } from '../../shared/types/api';
 import './App.css';
+import { getHandValue } from './utils/cardHelpers';
 
 interface GameState {
   isPlaying: boolean;
@@ -25,13 +26,14 @@ function App() {
     isPlaying: false,
     playerId: null,
     playerSeat: null,
-    balance: 0,
+    balance: 1000,
     occupiedSeats: [],
-    gameData: null
   });
-
+  
   const [isInitialized, setIsInitialized] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  // Timer state usunięty - sprawdzamy backend w logach
+
   const initializationRef = useRef(false); // 🔥 GUARD przeciwko wielokrotnym inicjalizacjom
   const [previousGameData, setPreviousGameData] = useState<any>(null);
 
@@ -78,13 +80,10 @@ function App() {
           // TODO: Dodać wyświetlanie powiadomień
         });
 
-        // Obsługa timeUpdate events (bez logowania - za dużo spamu)
+        // Wyłączone - sprawdzamy backend timery w logach
         socketService.onTimeUpdate((data) => {
-          // Loguj tylko kluczowe momenty (ostatnie 5 sekund)
-          if (data.remainingTime <= 5000 && data.remainingTime % 1000 < 100) {
-            console.log(`⏰ ${data.type} countdown: ${Math.ceil(data.remainingTime / 1000)}s`);
-          }
-          // TODO: Wyświetl timer w UI jeśli potrzebne
+          // Nie wyświetlamy timera w UI - tylko logi backend
+          console.log(`⏰ Backend timer: ${data.type} - ${Math.ceil(data.remainingTime / 1000)}s remaining`);
         });
 
         if (mounted) {
@@ -244,23 +243,55 @@ function App() {
     });
   };
 
+  // Funkcja do liczenia wartości tylko odsłoniętych kart dealera
+  const getDealerVisibleHandValue = () => {
+    if (!gameInfo.dealer?.hands[0]?.cards) return undefined;
+    
+    const visibleCards = gameInfo.dealer.hands[0].cards.filter(card => card.isFaceUp);
+    if (visibleCards.length === 0) return undefined;
+    
+    // Użyj tej samej logiki co getHandValue, ale tylko dla odsłoniętych kart
+    const mockHand = { 
+      cards: visibleCards,
+      bet: 0,
+      isFinished: false,
+      hasDoubled: false,
+      hasSplit: false
+    };
+    return getHandValue(mockHand);
+  };
+
   // Real game action handlers
   const handleHit = async () => {
     if (!gameState.playerId || !gameState.gameData?.id) return;
+    console.log('🎯 Attempting HIT action:', {
+      gameId: gameState.gameData.id,
+      playerId: gameState.playerId,
+      currentState: gameState.gameData.state,
+      isMyTurn: gameInfo.isMyTurn
+    });
     try {
       await api.hit(gameState.gameData.id, gameState.playerId);
+      console.log('✅ HIT action successful');
     } catch (error) {
-      console.error('Failed to hit:', error);
+      console.error('❌ Failed to hit:', error);
       alert('Failed to hit. Please try again.');
     }
   };
 
   const handleStay = async () => {
     if (!gameState.playerId || !gameState.gameData?.id) return;
+    console.log('🛑 Attempting STAND action:', {
+      gameId: gameState.gameData.id,
+      playerId: gameState.playerId,
+      currentState: gameState.gameData.state,
+      isMyTurn: gameInfo.isMyTurn
+    });
     try {
       await api.stand(gameState.gameData.id, gameState.playerId);
+      console.log('✅ STAND action successful');
     } catch (error) {
-      console.error('Failed to stand:', error);
+      console.error('❌ Failed to stand:', error);
       alert('Failed to stand. Please try again.');
     }
   };
@@ -287,13 +318,38 @@ function App() {
 
   const handlePlaceBet = async (amount: number) => {
     if (!gameState.playerId || !gameState.gameData?.id) return;
+    console.log('💰 Attempting to place bet:', {
+      amount,
+      gameId: gameState.gameData.id,
+      playerId: gameState.playerId,
+      currentState: gameState.gameData.state,
+      currentBalance: gameInfo.currentPlayer?.balance
+    });
     try {
       await api.placeBet(gameState.gameData.id, gameState.playerId, amount);
+      console.log('✅ Bet placed successfully');
     } catch (error) {
-      console.error('Failed to place bet:', error);
+      console.error('❌ Failed to place bet:', error);
       alert('Failed to place bet. Please try again.');
     }
   };
+
+  // Dodaj logowanie dla zmian stanu gry
+  useEffect(() => {
+    if (gameState.gameData) {
+      console.log('🔄 Game state updated:', {
+        state: gameState.gameData.state,
+        playersCount: gameState.gameData.players.length,
+        currentPlayerIndex: gameState.gameData.currentPlayerIndex,
+        myPlayerId: gameState.playerId,
+        isMyTurn: gameInfo.isMyTurn,
+        availableActions: gameInfo.availableActions
+      });
+
+      // Logi stanów gry - timer wyłączony
+      console.log(`🎮 Game state: ${gameState.gameData.state}`);
+    }
+  }, [gameState.gameData, gameInfo]);
 
   if (!isInitialized) {
     return (
@@ -330,11 +386,7 @@ function App() {
           <div className="game-status">
             {gameInfo.gameStatus}
           </div>
-          {gameInfo.timeRemaining !== undefined && gameInfo.isTimeRunning && (
-            <div className="timer">
-              Time: {gameInfo.timeRemaining}s
-            </div>
-          )}
+          {/* Timer wyłączony - sprawdzamy backend w logach */}
           <button className="exit-button" onClick={handleExitGame}>
             EXIT
           </button>
@@ -355,28 +407,22 @@ function App() {
 
         <Table 
           dealerCards={renderCards(gameInfo.dealer?.hands[0]?.cards || [], 'dealer', true)}
+          dealerHandValue={getDealerVisibleHandValue()}
           playerSpots={[1, 2, 3].map(seatNumber => {
             const player = getPlayerForSeat(seatNumber);
+            const hand = player?.hands[0];
             return {
               id: seatNumber,
-              cards: renderCards(player?.hands[0]?.cards || [], player?.id),
+              cards: renderCards(hand?.cards || [], player?.id),
               isOccupied: gameState.occupiedSeats.includes(seatNumber),
-              betAmount: player?.hands[0]?.bet || 0
+              betAmount: hand?.bet || 0,
+              handValue: hand?.cards && hand.cards.length > 0 ? 
+                getHandValue(hand) : undefined
             };
           })}
         />
 
-        {/* Show player's hand info */}
-        {gameInfo.currentPlayer && (
-          <div className="player-info-section">
-            <div className="hand-info">
-              <span>Your Hand Value: {gameInfo.myHandValue}</span>
-              <span>Your Bet: ${gameInfo.currentPlayer.hands[0]?.bet || 0}</span>
-              {gameInfo.isBlackjack && <span className="special">BLACKJACK!</span>}
-              {gameInfo.isBusted && <span className="special">BUSTED!</span>}
-            </div>
-          </div>
-        )}
+        {/* Usunięto player-info-section z wartością ręki - teraz jest w kółeczku */}
 
         <div className="controls-container">
           <Controls
@@ -384,7 +430,6 @@ function App() {
             onDouble={gameInfo.availableActions.canDouble ? handleDouble : undefined}
             onStay={gameInfo.availableActions.canStand ? handleStay : undefined}
             onHit={gameInfo.availableActions.canHit ? handleHit : undefined}
-            betAmount={gameInfo.currentPlayer?.hands[0]?.bet || 0}
           />
         </div>
       </div>
