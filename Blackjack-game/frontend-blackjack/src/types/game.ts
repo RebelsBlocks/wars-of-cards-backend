@@ -1,4 +1,3 @@
-// Typy importowane z backend'u - utrzymujemy zgodność
 export enum GameState {
   WAITING_FOR_PLAYERS = 'WAITING_FOR_PLAYERS',
   BETTING = 'BETTING',
@@ -16,9 +15,9 @@ export enum PlayerMove {
 }
 
 export enum PlayerState {
-  WAITING_FOR_NEXT_ROUND = 'WAITING_FOR_NEXT_ROUND',
-  ACTIVE = 'ACTIVE',
-  SITTING_OUT = 'SITTING_OUT'
+  WAITING_FOR_NEXT_ROUND = 'WAITING_FOR_NEXT_ROUND', // Nowy gracz czeka na następną rundę
+  ACTIVE = 'ACTIVE',                                  // Gra w rundzie  
+  SITTING_OUT = 'SITTING_OUT'                        // Przerwa na rundę
 }
 
 export interface Card {
@@ -40,11 +39,13 @@ export interface Player {
   hands: Hand[];
   balance: number;
   isDealer: boolean;
-  seatNumber?: number;
+  seatNumber?: number; // Dodany numer miejsca (1, 2, 3)
   moveTimeoutId?: NodeJS.Timeout;
   betTimeoutId?: NodeJS.Timeout;
+  betIntervalId?: NodeJS.Timeout; // Interval dla bet timeUpdate
+  moveIntervalId?: NodeJS.Timeout; // Interval dla move timeUpdate
   currentHandIndex?: number;
-  state?: PlayerState;
+  state?: PlayerState; // Nowy stan gracza
 }
 
 export interface GameSession {
@@ -57,33 +58,5 @@ export interface GameSession {
   currentTurnStartTime?: number;
   insuranceAvailable?: boolean;
   insurancePhase?: boolean;
-  occupiedSeats: Set<number>;
-}
-
-// Dodatkowe typy dla UI
-export interface GameInfo {
-  // Podstawowe dane
-  currentPlayer: Player | null;
-  dealer: Player | null;
-  otherPlayers: Player[];
-  
-  // Stan gry
-  isMyTurn: boolean;
-  gameStatus: string;
-  availableActions: {
-    canHit: boolean;
-    canStand: boolean;
-    canDouble: boolean;
-    canSplit: boolean;
-  };
-  
-  // Informacje o rękach
-  myHandValue: number;
-  dealerHandValue: number;
-  isBlackjack: boolean;
-  isBusted: boolean;
-  
-  // Timer/czas
-  timeRemaining?: number;
-  isTimeRunning: boolean;
+  occupiedSeats: Set<number>; // Śledzenie zajętych miejsc (1, 2, 3)
 }
