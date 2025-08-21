@@ -136,7 +136,11 @@ class SocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('Connected to WebSocket server');
+      console.log('🔌 Socket connected successfully', {
+        socketId: this.socket?.id,
+        gameId: this.gameId,
+        isInitialized: this.isInitialized
+      });
       this.reconnectAttempts = 0;
       this.isInitialized = true;
       if (this.reconnectTimer) {
@@ -146,26 +150,61 @@ class SocketService {
     });
 
     this.socket.on('disconnect', (reason: string) => {
-      console.log('Disconnected from WebSocket server:', reason);
+      console.log('🔌 Socket disconnected:', {
+        reason,
+        socketId: this.socket?.id,
+        gameId: this.gameId,
+        isIntentionalDisconnect: this.isIntentionalDisconnect,
+        reconnectAttempts: this.reconnectAttempts
+      });
       this.isInitialized = false;
       
       // Jeśli to celowy disconnect, nie próbuj reconnectować
       if (this.isIntentionalDisconnect) {
-        console.log('Intentional disconnect, skipping reconnection');
+        console.log('🚫 Intentional disconnect, skipping reconnection');
         return;
       }
       
       // Nie reconnectuj jeśli disconnect jest przez server restart lub transport close
       if (reason === 'io server disconnect' || reason === 'io client disconnect') {
-        console.log('Server initiated disconnect, not attempting reconnection');
+        console.log('⚠️ Server initiated disconnect, not attempting reconnection');
         return;
       }
       
       this.handleConnectionError();
     });
 
+    // Dodaj logowanie dla gameState
+    this.socket.on('gameState', (state: GameState) => {
+      console.log('🎮 Received game state:', {
+        state: state.state,
+        playersCount: state.players?.length,
+        currentPlayerIndex: state.currentPlayerIndex,
+        timestamp: new Date().toISOString()
+      });
+      if (this.gameStateCallback) {
+        this.gameStateCallback(state);
+      }
+    });
+
+    // Dodaj logowanie dla notification
+    this.socket.on('notification', (message: string) => {
+      console.log('📢 Game notification:', {
+        message,
+        timestamp: new Date().toISOString()
+      });
+      if (this.notificationCallback) {
+        this.notificationCallback(message);
+      }
+    });
+
     this.socket.on('connect_error', (error: Error) => {
-      console.error('Connection error:', error);
+      console.error('❌ Connection error:', {
+        error: error.message,
+        socketId: this.socket?.id,
+        gameId: this.gameId,
+        reconnectAttempts: this.reconnectAttempts
+      });
       this.isInitialized = false;
       this.handleConnectionError();
     });
