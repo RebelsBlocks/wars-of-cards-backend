@@ -1,0 +1,1348 @@
+.table-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  background: radial-gradient(ellipse at center, #1e2a3a 0%, #0f1419 100%);
+  overflow: hidden;
+  flex: 1;
+  padding-bottom: 80px;
+}
+
+/* Klasyczny kształt stołu kasyna */
+.table-frame {
+  width: 120%; /* Zwiększamy szerokość dla lepszych proporcji */
+  height: 380px; /* Zmniejszamy wysokość - bardziej płaski, elegancki kształt */
+  position: relative;
+  margin: 0 auto 0 auto; /* Centrujemy stół i usuwamy margin na dole */
+}
+
+.table-surface {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, #2d7a2d 0%, #1a5f1a 100%);
+  border-radius: 0 0 60% 60%; /* Bardziej eleganckie zaokrąglenie */
+  position: relative;
+  padding: 25px 25px 0 25px; /* Zwiększamy padding dla lepszych proporcji, ale usuwamy padding na dole */
+  /* Elegancka drewniana ramka */
+  box-shadow: 
+    /* Wewnętrzny cień dla głębi */
+    inset 0 0 30px rgba(0,0,0,0.2),
+    /* Główna drewniana ramka - bardziej elegancka */
+    0 0 0 20px #5d4037,
+    0 0 0 22px #3e2723,
+    0 0 0 25px #8d6e63,
+    0 0 0 28px #5d4037,
+    /* Zewnętrzny cień */
+    0 8px 25px rgba(0,0,0,0.5);
+    
+  /* Dodajemy teksturę drewna jako tło na ramce */
+  background-image: 
+    /* Elegancki zielony gradient na wierzchu */
+    radial-gradient(ellipse at center, #2d7a2d 0%, #1a5f1a 100%),
+    /* Subtelne linie na zielonym filcu */
+    repeating-linear-gradient(
+      to right,
+      transparent,
+      transparent 1px,
+      rgba(255, 255, 255, 0.015) 1px,
+      rgba(255, 255, 255, 0.015) 2px
+    );
+}
+
+/* Dodajemy teksturę drewna jako pseudo-element na ramce */
+.table-surface::before {
+  content: '';
+  position: absolute;
+  top: -35px;
+  left: -35px;
+  right: -35px;
+  bottom: -35px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.08) 3px,
+    rgba(0,0,0,0.08) 6px
+  );
+  border-radius: 0 0 50% 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Obszar krupiera */
+.dealer-area {
+  position: absolute;
+  top: -25px; /* Przesunięte jeszcze wyżej - karty dealera bliżej góry ramy stołu */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: 100%;
+  z-index: 2; /* Niżej niż karty, ale wyżej niż napisy na stole */
+}
+
+/* Community Cards Section */
+.community-cards-section {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+}
+
+.community-cards-section h3 {
+  color: rgba(212, 175, 55, 0.8);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  text-shadow: 
+    1px 1px 3px rgba(0,0,0,0.6),
+    0 0 8px rgba(212, 175, 55, 0.4);
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.community-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  min-height: 60px;
+}
+
+/* Kontener grafiki dealera */
+.dealer-image-container {
+  position: absolute;
+  top: -349px; /* Jeszcze wyżej (było -320px) */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 420px; /* Większa (było 350px) */
+  height: 420px; /* Większa (było 350px) */
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* Grafika dealera */
+.dealer-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3)); /* Delikatny cień */
+  /* Usuwam border-radius - niech obraz zachowa naturalny kształt */
+  background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, transparent 70%); /* Subtelne tło */
+}
+
+
+
+
+
+.dealer-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Wyrównaj karty w pionie */
+  position: relative;
+}
+
+.dealer-cards .card {
+  position: relative;
+}
+
+.dealer-cards .card:not(:first-child) {
+  margin-left: -90px; /* Zwiększone z -75px - proporcjonalne do nowych rozmiarów kart */
+}
+
+.dealer-cards .card:nth-child(1) { z-index: 5; }
+.dealer-cards .card:nth-child(2) { z-index: 6; }
+.dealer-cards .card:nth-child(3) { z-index: 7; }
+.dealer-cards .card:nth-child(4) { z-index: 8; }
+.dealer-cards .card:nth-child(5) { z-index: 9; }
+
+/* Napisy na stole */
+.table-text {
+  position: absolute;
+  top: 28%; /* Dostosowane do nowej wysokości */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1; /* Niżej niż karty - jak namalowane na stole */
+}
+
+.blackjack-text {
+  color: rgba(212, 175, 55, 0.6); /* Elegancki złoty */
+  font-size: 32px; /* Zmniejszone z 42px */
+  font-weight: 900;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  text-shadow: 
+    2px 2px 6px rgba(0,0,0,0.6),
+    0 0 15px rgba(212, 175, 55, 0.4),
+    0 0 30px rgba(212, 175, 55, 0.2);
+  letter-spacing: 4px;
+  margin-bottom: 8px; /* Zmniejszone z 10px */
+  opacity: 0.8; /* Lepsza widoczność */
+  -webkit-text-stroke: 1px rgba(0,0,0,0.3);
+}
+
+.pays-text {
+  color: rgba(212, 175, 55, 0.5); /* Elegancki złoty */
+  font-size: 14px; /* Zmniejszone z 18px */
+  font-weight: 700;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  text-shadow: 
+    1px 1px 3px rgba(0,0,0,0.4),
+    0 0 8px rgba(212, 175, 55, 0.3);
+  letter-spacing: 2px;
+  margin-bottom: 10px; /* Zmniejszone z 14px */
+  opacity: 0.7; /* Lepsza widoczność */
+}
+
+.dealer-must-text {
+  color: rgba(255, 255, 255, 0.6); /* Elegancki biały */
+  font-size: 12px; /* Zmniejszone z 16px */
+  font-weight: 600;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  text-shadow: 
+    1px 1px 3px rgba(0,0,0,0.5),
+    0 0 6px rgba(255, 255, 255, 0.2);
+  letter-spacing: 1.5px;
+  margin-bottom: 8px; /* Zmniejszone z 12px */
+  opacity: 0.7; /* Lepsza widoczność */
+}
+
+
+
+
+
+/* Player spots container - moved to PlayerSpot.css */
+
+/* Kółeczko z wartością ręki dealera */
+.dealer-hand-value-circle {
+  position: absolute;
+  bottom: 30px; /* Przesunięte jeszcze wyżej - bardzo blisko kart dealera */
+  left: 42%; /* Przy rogu pierwszej karty dealera - trochę w lewo */
+  transform: translateX(-50%);
+  width: 35px;
+  height: 35px;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+/* Dealer hand result display */
+.dealer-cards .hand-result {
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 900;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-shadow: 
+    1px 1px 3px rgba(0,0,0,0.8),
+    0 0 8px rgba(255,255,255,0.3);
+  border: 2px solid;
+  z-index: 15;
+  white-space: nowrap;
+  box-shadow: 
+    0 3px 8px rgba(0,0,0,0.6),
+    inset 0 1px 2px rgba(255,255,255,0.2);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+/* Dealer result type specific styles */
+.dealer-cards .hand-result.result-blackjack {
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+  color: #000;
+  border-color: #B8860B;
+  text-shadow: 
+    2px 2px 4px rgba(0,0,0,0.8),
+    0 0 15px rgba(255,215,0,0.6),
+    0 0 25px rgba(255,215,0,0.4);
+  animation: glow-gold 2s infinite alternate;
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,0.6),
+    inset 0 1px 2px rgba(255,255,255,0.3),
+    0 0 20px rgba(255,215,0,0.4);
+}
+
+.dealer-cards .hand-result.result-win {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%);
+  color: #fff;
+  border-color: #155724;
+  text-shadow: 
+    2px 2px 4px rgba(0,0,0,0.8),
+    0 0 15px rgba(40,167,69,0.6),
+    0 0 25px rgba(40,167,69,0.4);
+  animation: glow-green 1.5s infinite alternate;
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,0.6),
+    inset 0 1px 2px rgba(255,255,255,0.3),
+    0 0 20px rgba(40,167,69,0.4);
+}
+
+.dealer-cards .hand-result.result-push {
+  background: linear-gradient(135deg, #6c757d 0%, #495057 50%, #343a40 100%);
+  color: #fff;
+  border-color: #495057;
+  text-shadow: 
+    2px 2px 4px rgba(0,0,0,0.8),
+    0 0 15px rgba(255,255,255,0.4);
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,0.6),
+    inset 0 1px 2px rgba(255,255,255,0.2);
+}
+
+.dealer-cards .hand-result.result-bust {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 50%, #bd2130 100%);
+  color: #fff;
+  border-color: #721c24;
+  text-shadow: 
+    2px 2px 4px rgba(0,0,0,0.8),
+    0 0 15px rgba(220,53,69,0.6),
+    0 0 25px rgba(220,53,69,0.4);
+  animation: glow-red 1s infinite alternate;
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,0.6),
+    inset 0 1px 2px rgba(255,255,255,0.3),
+    0 0 20px rgba(220,53,69,0.4);
+}
+
+.dealer-cards .hand-result.result-lose {
+  background: linear-gradient(135deg, #dc3545 0%, #bd2130 50%, #a71e2a 100%);
+  color: #fff;
+  border-color: #721c24;
+  text-shadow: 
+    2px 2px 4px rgba(0,0,0,0.8),
+    0 0 15px rgba(220,53,69,0.5);
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,0.6),
+    inset 0 1px 2px rgba(255,255,255,0.2);
+}
+
+/* Glow animations for dealer results */
+@keyframes glow-gold {
+  from { 
+    box-shadow: 
+      0 4px 12px rgba(0,0,0,0.6),
+      inset 0 1px 2px rgba(255,255,255,0.3),
+      0 0 20px rgba(255, 215, 0, 0.6),
+      0 0 40px rgba(255, 215, 0, 0.3);
+    text-shadow: 
+      2px 2px 4px rgba(0,0,0,0.8),
+      0 0 15px rgba(255,215,0,0.6),
+      0 0 25px rgba(255,215,0,0.4);
+  }
+  to { 
+    box-shadow: 
+      0 4px 12px rgba(0,0,0,0.6),
+      inset 0 1px 2px rgba(255,255,255,0.3),
+      0 0 30px rgba(255, 215, 0, 0.9),
+      0 0 60px rgba(255, 215, 0, 0.5);
+    text-shadow: 
+      2px 2px 4px rgba(0,0,0,0.8),
+      0 0 25px rgba(255,215,0,0.8),
+      0 0 40px rgba(255,215,0,0.6);
+  }
+}
+
+@keyframes glow-green {
+  from { 
+    box-shadow: 
+      0 4px 12px rgba(0,0,0,0.6),
+      inset 0 1px 2px rgba(255,255,255,0.3),
+      0 0 20px rgba(40, 167, 69, 0.6),
+      0 0 40px rgba(40, 167, 69, 0.3);
+    text-shadow: 
+      2px 2px 4px rgba(0,0,0,0.8),
+      0 0 15px rgba(40,167,69,0.6),
+      0 0 25px rgba(40,167,69,0.4);
+  }
+  to { 
+    box-shadow: 
+      0 4px 12px rgba(0,0,0,0.6),
+      inset 0 1px 2px rgba(255,255,255,0.3),
+      0 0 30px rgba(40, 167, 69, 0.9),
+      0 0 60px rgba(40, 167, 69, 0.5);
+    text-shadow: 
+      2px 2px 4px rgba(0,0,0,0.8),
+      0 0 25px rgba(40,167,69,0.8),
+      0 0 40px rgba(40,167,69,0.6);
+  }
+}
+
+@keyframes glow-red {
+  from { 
+    box-shadow: 
+      0 4px 12px rgba(0,0,0,0.6),
+      inset 0 1px 2px rgba(255,255,255,0.3),
+      0 0 20px rgba(220, 53, 69, 0.6),
+      0 0 40px rgba(220, 53, 69, 0.3);
+    text-shadow: 
+      2px 2px 4px rgba(0,0,0,0.8),
+      0 0 15px rgba(220,53,69,0.6),
+      0 0 25px rgba(220,53,69,0.4);
+  }
+  to { 
+    box-shadow: 
+      0 4px 12px rgba(0,0,0,0.6),
+      inset 0 1px 2px rgba(255,255,255,0.3),
+      0 0 30px rgba(220, 53, 69, 0.9),
+      0 0 60px rgba(220, 53, 69, 0.5);
+    text-shadow: 
+      2px 2px 4px rgba(0,0,0,0.8),
+      0 0 25px rgba(220,53,69,0.8),
+      0 0 40px rgba(220,53,69,0.6);
+  }
+}
+
+/* Player hand styles moved to PlayerHand.css */
+
+/* Player spots container */
+.player-spots {
+  position: absolute;
+  bottom: 25px; /* Zmniejszone z 35px - lepiej się mieści w mniejszym stole */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  z-index: 3; /* Niżej niż karty, wyżej niż napisy */
+}
+
+/* Przesuwamy miejsca 1 i 3 do góry, a miejsce 2 zostawiamy niżej */
+/* Teraz: first-child = seat 3 (lewy), last-child = seat 1 (prawy) */
+.player-spots .player-spot:first-child,
+.player-spots .player-spot:last-child {
+  margin-bottom: 35px; /* Zwiększone z 25px */
+}
+
+/* Przesuwamy środkowe miejsce w dół */
+.player-spots .player-spot:nth-child(2) {
+  margin-bottom: -10px;
+}
+
+/* Player spot styles moved to PlayerSpot.css */
+
+/* Hand result styles moved to PlayerHand.css */
+
+/* Responsywność */
+@media (max-width: 1400px) {
+  .table-container {
+    padding-bottom: 80px;
+  }
+
+  .table-frame {
+    height: 350px; /* Dostosowane do nowych proporcji */
+  }
+
+
+
+  .blackjack-text {
+    font-size: 28px;
+    letter-spacing: 3px;
+    opacity: 0.7; /* Lepsza widoczność na mniejszych ekranach */
+  }
+
+  .community-cards-section h3 {
+    font-size: 14px;
+    letter-spacing: 1.5px;
+  }
+
+  .community-cards {
+    gap: 3px;
+    min-height: 50px;
+  }
+
+  .player-spot {
+    width: 65px; /* Zmniejszone z 85px */
+    height: 65px; /* Zmniejszone z 85px */
+    margin: 0 8px; /* Zmniejszone z 10px */
+  }
+
+  .hand-value-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+    bottom: 18px;
+    left: 20%;
+  }
+
+  .dealer-hand-value-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+    bottom: 28px;
+    left: 42%;
+  }
+
+  /* Split hands - smaller value circles */
+  .player-hands-split .hand-value-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+    bottom: 1px; /* Przeniesione jeszcze niżej */
+  }
+}
+
+@media (max-width: 1024px) {
+  .table-container {
+    padding-bottom: 70px;
+  }
+
+  .table-frame {
+    height: 320px; /* Dostosowane do nowych proporcji */
+  }
+
+  .table-surface {
+    padding: 22px;
+  }
+
+
+
+  .blackjack-text {
+    font-size: 26px;
+    letter-spacing: 3px;
+    opacity: 0.6; /* Lepsza widoczność na średnich ekranach */
+  }
+
+  .community-cards-section h3 {
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  .community-cards {
+    gap: 2px;
+    min-height: 45px;
+  }
+
+  .pays-text {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  .dealer-area {
+    top: -20px; /* Przesunięte jeszcze wyżej - karty dealera bliżej góry ramy stołu */
+  }
+
+
+
+  .player-spots {
+    bottom: 32px;
+  }
+
+  .player-spot {
+    width: 60px; /* Zmniejszone z 80px */
+    height: 60px; /* Zmniejszone z 80px */
+    margin: 0 6px; /* Zmniejszone z 8px */
+  }
+
+  .player-spots .player-spot:first-child,
+  .player-spots .player-spot:last-child {
+    margin-bottom: 20px;
+  }
+
+  .player-spots .player-spot:nth-child(2) {
+    margin-bottom: -6px;
+  }
+
+  .spot-number {
+    font-size: 11px;
+    top: -22px;
+  }
+
+  .vacant-label {
+    font-size: 9px;
+  }
+
+  .hand-value-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    bottom: 16px;
+    left: 20%;
+  }
+
+  .dealer-hand-value-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    bottom: 26px;
+    left: 42%;
+  }
+
+  /* Split hands - smaller value circles */
+  .player-hands-split .hand-value-circle {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+    bottom: -1px; /* Przeniesione jeszcze niżej */
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    padding-bottom: 60px;
+  }
+
+  .dealer-image-container {
+    top: -340px; /* Trochę niżej niż główna wartość -349px */
+  }
+
+  .table-frame {
+    height: 290px; /* Dostosowane do nowych proporcji */
+  }
+
+  .table-surface {
+    padding: 20px;
+    box-shadow: 
+      inset 0 0 20px rgba(0,0,0,0.2),
+      0 0 0 15px #5d4037,
+      0 0 0 17px #3e2723,
+      0 0 0 20px #8d6e63,
+      0 5px 15px rgba(0,0,0,0.5);
+  }
+
+
+
+  .blackjack-text {
+    font-size: 24px;
+    letter-spacing: 2px;
+    opacity: 0.5; /* Lepsza widoczność na małych ekranach */
+  }
+
+  .community-cards-section h3 {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .community-cards {
+    gap: 2px;
+    min-height: 40px;
+  }
+
+  .pays-text {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .dealer-must-text {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+
+
+  .dealer-area {
+    top: -18px; /* Przesunięte jeszcze wyżej - karty dealera bliżej góry ramy stołu */
+  }
+
+  /* Delicate dealer cards spacing adjustment */
+  .dealer-cards .card:not(:first-child) {
+    margin-left: -80px; /* Slightly reduced from -90px */
+  }
+
+
+
+  .player-spots {
+    bottom: 28px;
+  }
+
+  .player-spot {
+    width: 55px; /* Zmniejszone z 70px */
+    height: 55px; /* Zmniejszone z 70px */
+    margin: 0 5px; /* Zmniejszone z 6px */
+  }
+
+  .player-spots .player-spot:first-child,
+  .player-spots .player-spot:last-child {
+    margin-bottom: 15px;
+  }
+
+  .player-spots .player-spot:nth-child(2) {
+    margin-bottom: -5px;
+  }
+
+  .spot-number {
+    font-size: 10px;
+    top: -20px;
+  }
+
+  .vacant-label {
+    font-size: 8px;
+  }
+
+  .hand-value-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+    bottom: 14px;
+    left: 20%;
+  }
+
+  .dealer-hand-value-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+    bottom: 24px;
+    left: 42%;
+  }
+
+  /* Split hands - smaller value circles */
+  .player-hands-split .hand-value-circle {
+    width: 24px;
+    height: 24px;
+    font-size: 9px;
+    bottom: -3px; /* Przeniesione jeszcze niżej */
+  }
+}
+
+@media (max-width: 480px) {
+  .table-container {
+    padding-bottom: 50px;
+  }
+
+  .dealer-image-container {
+    top: -260px; /* Jeszcze wyżej (było -260px) */
+    width: 320px; /* Większa (było 280px) */
+    height: 320px; /* Większa (było 280px) */
+  }
+
+  .table-frame {
+    height: 265px; /* Dostosowane do nowych proporcji */
+  }
+
+  .table-surface {
+    padding: 18px;
+    box-shadow: 
+      inset 0 0 18px rgba(0,0,0,0.2),
+      0 0 0 12px #5d4037,
+      0 0 0 14px #3e2723,
+      0 0 0 16px #8d6e63,
+      0 4px 12px rgba(0,0,0,0.5);
+  }
+
+
+
+  .blackjack-text {
+    font-size: 20px;
+    letter-spacing: 1.5px;
+  }
+
+  .community-cards-section h3 {
+    font-size: 11px;
+    letter-spacing: 0.25px;
+  }
+
+  .community-cards {
+    gap: 1px;
+    min-height: 35px;
+  }
+
+  .pays-text {
+    font-size: 9px;
+    letter-spacing: 0.5px;
+  }
+
+  .dealer-must-text {
+    font-size: 8px;
+    letter-spacing: 0.25px;
+  }
+
+  .dealer-area {
+    top: -15px; /* Przesunięte jeszcze wyżej - karty dealera bliżej góry ramy stołu */
+  }
+
+  .player-spots {
+    bottom: 25px;
+  }
+
+  .player-spot {
+    width: 50px; /* Zmniejszone z 60px */
+    height: 50px; /* Zmniejszone z 60px */
+    margin: 0 4px; /* Zmniejszone z 5px */
+  }
+
+  .player-spots .player-spot:first-child,
+  .player-spots .player-spot:last-child {
+    margin-bottom: 12px;
+  }
+
+  .player-spots .player-spot:nth-child(2) {
+    margin-bottom: -4px;
+  }
+
+  .spot-number {
+    font-size: 9px;
+    top: -18px;
+    padding: 1px 5px;
+  }
+
+  .vacant-label {
+    font-size: 7px;
+  }
+
+  .bet-amount {
+    font-size: 12px;
+    bottom: -30px; /* Przesunięte niżej z -20px - pod kółkiem z wartością */
+    padding: 2px 6px;
+  }
+
+  .hand-value-circle {
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
+    bottom: 12px;
+    left: 20%;
+  }
+
+  .dealer-hand-value-circle {
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
+    bottom: 22px;
+    left: 42%;
+  }
+
+  /* Split hands - smaller value circles */
+  .player-hands-split .hand-value-circle {
+    width: 22px;
+    height: 22px;
+    font-size: 8px;
+    bottom: -5px; /* Przeniesione jeszcze niżej */
+  }
+}
+
+/* Responsive adjustments for hand results */
+@media (max-width: 1024px) {
+  .hand-result {
+    font-size: 11px;
+    padding: 3px 10px;
+    letter-spacing: 1px;
+  }
+  
+  .dealer-cards .hand-result {
+    font-size: 11px;
+    padding: 3px 10px;
+    letter-spacing: 1px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hand-result {
+    font-size: 10px;
+    padding: 3px 8px;
+    letter-spacing: 0.5px;
+  }
+  
+  .dealer-cards .hand-result {
+    font-size: 10px;
+    padding: 3px 8px;
+    letter-spacing: 0.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hand-result {
+    font-size: 9px;
+    padding: 2px 6px;
+    letter-spacing: 0.25px;
+  }
+  
+  .dealer-cards .hand-result {
+    font-size: 9px;
+    padding: 2px 6px;
+    letter-spacing: 0.25px;
+  }
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  .hand-result {
+    font-size: 8px;
+    padding: 1px 5px;
+    letter-spacing: 0.1px;
+  }
+  
+  .dealer-cards .hand-result {
+    font-size: 8px;
+    padding: 1px 5px;
+    letter-spacing: 0.1px;
+  }
+}
+
+/* Orientacja pozioma na telefonach */
+@media (max-height: 480px) and (orientation: landscape) {
+  .table-container {
+    padding-bottom: 0;
+  }
+
+  .table-frame {
+    height: 300px; /* Proporcjonalnie dostosowane */
+  }
+
+  .table-surface {
+    padding: 15px;
+  }
+
+
+
+  .blackjack-text {
+    font-size: 22px;
+  }
+
+  .community-cards-section h3 {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .community-cards {
+    gap: 2px;
+    min-height: 40px;
+  }
+
+  .player-spots {
+    bottom: 20px;
+  }
+
+  .player-spot {
+    width: 55px;
+    height: 55px;
+    margin: 0 4px;
+  }
+
+  .player-spots .player-spot:first-child,
+  .player-spots .player-spot:last-child {
+    margin-bottom: 10px;
+  }
+
+  .player-spots .player-spot:nth-child(2) {
+    margin-bottom: -3px;
+  }
+
+  .dealer-area {
+    top: -18px; /* Przesunięte jeszcze wyżej - karty dealera bliżej góry ramy stołu */
+  }
+
+
+
+  .spot-number {
+    font-size: 8px;
+    top: -16px;
+  }
+
+  .vacant-label {
+    font-size: 6px;
+  }
+
+  .hand-value-circle {
+    width: 22px;
+    height: 22px;
+    font-size: 8px;
+    bottom: 10px;
+    left: 20%;
+  }
+
+  .dealer-hand-value-circle {
+    width: 22px;
+    height: 22px;
+    font-size: 8px;
+    bottom: 20px;
+    left: 42%;
+  }
+
+  /* Split hands - smaller value circles */
+  .player-hands-split .hand-value-circle {
+    width: 20px;
+    height: 20px;
+    font-size: 7px;
+    bottom: -7px; /* Przeniesione jeszcze niżej */
+  }
+} 
+
+/* Holographic Betting Interface */
+.holographic-betting-interface {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hologram-container {
+  position: absolute;
+  top: -20px; /* Startuje poza górną obręczą */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 140px;
+  pointer-events: auto;
+  animation: hologramSlideDown 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.hologram-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.2),
+    inset 0 0 10px rgba(255, 215, 0, 0.05),
+    0 10px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.hologram-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 165, 0, 0.1) 0%, transparent 50%),
+    linear-gradient(45deg, transparent 30%, rgba(255, 215, 0, 0.05) 50%, transparent 70%);
+  animation: hologramGlow 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.hologram-title {
+  color: #FFFFFF;
+  text-align: center;
+  margin: 0 0 15px 0;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 2;
+}
+
+.hologram-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.hologram-button {
+  padding: 10px 16px;
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 8px;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+.hologram-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+.hologram-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    0 5px 15px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 215, 0, 0.8);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(30, 30, 30, 0.9) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  text-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.6),
+    0 0 15px rgba(255, 215, 0, 0.4),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hologram-button:hover::before {
+  left: 100%;
+}
+
+.hologram-button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Disabled state for hologram buttons */
+.hologram-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 
+    0 0 8px rgba(255, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 0, 0, 0.4);
+  color: rgba(255, 255, 255, 0.6);
+  text-shadow: 
+    0 0 5px rgba(255, 0, 0, 0.3),
+    0 0 10px rgba(255, 0, 0, 0.2),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.8) 0%, 
+    rgba(20, 20, 20, 0.7) 50%, 
+    rgba(0, 0, 0, 0.8) 100%);
+}
+
+.hologram-button:disabled:hover {
+  transform: none;
+  box-shadow: 
+    0 0 8px rgba(255, 0, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 0, 0, 0.4);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.8) 0%, 
+    rgba(20, 20, 20, 0.7) 50%, 
+    rgba(0, 0, 0, 0.8) 100%);
+}
+
+.hologram-button:disabled::before {
+  display: none;
+}
+
+/* Animacje hologramu */
+@keyframes hologramSlideDown {
+  0% {
+    top: -20px;
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1.05);
+  }
+  100% {
+    top: 20px;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes hologramGlow {
+  0% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
+}
+
+/* Responsywność dla hologramu */
+@media (max-width: 1400px) {
+  .hologram-container {
+    width: 300px;
+    height: 130px;
+  }
+  
+  .hologram-title {
+    font-size: 17px;
+    margin-bottom: 13px;
+  }
+  
+  .hologram-buttons {
+    gap: 10px;
+  }
+  
+  .hologram-button {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hologram-container {
+    width: 290px;
+    height: 125px;
+  }
+  
+  .hologram-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .hologram-buttons {
+    gap: 9px;
+  }
+  
+  .hologram-button {
+    padding: 8px 13px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hologram-container {
+    width: 280px;
+    height: 120px;
+  }
+  
+  .hologram-content {
+    padding: 18px;
+  }
+  
+  .hologram-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .hologram-buttons {
+    gap: 8px;
+  }
+  
+  .hologram-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hologram-container {
+    width: 240px;
+    height: 100px;
+  }
+  
+  .hologram-content {
+    padding: 15px;
+  }
+  
+  .hologram-title {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  
+  .hologram-buttons {
+    gap: 6px;
+  }
+  
+  .hologram-button {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hologram-container {
+    width: 220px;
+    height: 90px;
+  }
+  
+  .hologram-content {
+    padding: 12px;
+  }
+  
+  .hologram-title {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  
+  .hologram-buttons {
+    gap: 4px;
+  }
+  
+  .hologram-button {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+}
+
+/* Orientacja pozioma na telefonach */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hologram-container {
+    width: 260px;
+    height: 80px;
+    top: 10px;
+  }
+  
+  .hologram-content {
+    padding: 12px;
+  }
+  
+  .hologram-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .hologram-buttons {
+    gap: 6px;
+  }
+  
+  .hologram-button {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+} 

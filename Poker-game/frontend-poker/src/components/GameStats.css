@@ -1,0 +1,326 @@
+.game-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 25px; /* Zwiększone z 15px - więcej miejsca na boki */
+  background: radial-gradient(ellipse at center, #2c3e50 0%, #1a252f 100%);
+  color: white;
+  font-family: 'Arial', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.balance {
+  font-size: 20px; /* Zwiększone z 17px - większa czcionka dla balance */
+  font-weight: bold;
+  font-family: 'Arial', sans-serif; /* Ujednolicona rodzina czcionek */
+  color: #FFFFFF;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  padding: 6px 16px; /* Zwiększone z 4px 10px */
+  border-radius: 10px; /* Zmniejszone z 12px */
+  border: 1px solid rgba(184, 134, 11, 0.8); /* Ciemniejszy odcień złota */
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.2),
+    0 0 15px rgba(255, 215, 0, 0.1), /* Dodane podświetlenie */
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  letter-spacing: 0.5px;
+  white-space: nowrap; /* Dodane - tekst nie łamie się na drugą linię */
+  min-width: 140px; /* Dodane - minimalna szerokość */
+  text-align: center; /* Dodane - wycentrowanie tekstu */
+}
+
+.game-status {
+  font-size: 14px; /* Zmniejszone z 17px - mniejsza czcionka dla komunikatów */
+  font-family: 'Arial', sans-serif; /* Ujednolicona rodzina czcionek */
+  color: #fff;
+  text-align: center;
+  flex-grow: 0; /* Usunięte flex-grow - nie rozszerza się */
+  margin: 0 40px; /* Zwiększone z 20px - więcej miejsca między elementami */
+  width: fit-content; /* Dodane - szerokość dopasowana do zawartości */
+  min-width: 140px; /* Zmienione na taką samą jak balance */
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  padding: 6px 16px; /* Takie same jak balance */
+  border-radius: 10px; /* Takie same jak balance */
+  border: 1px solid rgba(184, 134, 11, 0.8); /* Ciemniejszy odcień złota */
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.2),
+    0 0 15px rgba(255, 215, 0, 0.1), /* Dodane podświetlenie */
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
+}
+
+.exit-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(220, 53, 69, 0.2) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border: 2px solid rgba(220, 53, 69, 0.6);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 0 15px rgba(220, 53, 69, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  text-shadow: 
+    0 0 8px rgba(220, 53, 69, 0.8),
+    0 0 15px rgba(220, 53, 69, 0.4),
+    2px 2px 4px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.exit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+.exit-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(220, 53, 69, 0.3) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border-color: rgba(220, 53, 69, 0.8);
+  color: #FFFFFF;
+  box-shadow: 
+    0 0 25px rgba(220, 53, 69, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    0 5px 15px rgba(0, 0, 0, 0.3);
+  text-shadow: 
+    0 0 10px rgba(220, 53, 69, 0.9),
+    0 0 20px rgba(220, 53, 69, 0.5),
+    2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.exit-button:hover::before {
+  left: 100%;
+}
+
+.exit-button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 0 15px rgba(220, 53, 69, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .game-stats {
+    padding: 5px 22px;
+  }
+  
+  .balance {
+    font-size: 18px;
+    padding: 5px 14px;
+    min-width: 130px;
+  }
+  
+  .game-status {
+    font-size: 13px;
+    margin: 0 35px;
+    padding: 5px 14px;
+    min-width: 130px;
+  }
+  
+  .exit-button {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .game-stats {
+    padding: 5px 20px;
+  }
+  
+  .balance {
+    font-size: 16px;
+    padding: 4px 12px;
+    min-width: 120px;
+  }
+  
+  .game-status {
+    font-size: 12px;
+    margin: 0 30px;
+    padding: 4px 12px;
+    min-width: 120px;
+  }
+  
+  .exit-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .game-stats {
+    padding: 5px 18px;
+  }
+  
+  .balance {
+    font-size: 14px;
+    padding: 3px 10px;
+    min-width: 110px;
+  }
+  
+  .game-status {
+    font-size: 11px;
+    margin: 0 25px;
+    padding: 3px 10px;
+    min-width: 110px;
+  }
+  
+  .exit-button {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-stats {
+    padding: 4px 15px;
+  }
+  
+  .balance {
+    font-size: 12px;
+    padding: 2px 8px;
+    min-width: 100px;
+  }
+  
+  .game-status {
+    font-size: 10px;
+    margin: 0 20px;
+    padding: 2px 8px;
+    min-width: 100px;
+  }
+  
+  .exit-button {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .game-stats {
+    padding: 3px 12px;
+  }
+  
+  .balance {
+    font-size: 11px;
+    padding: 2px 6px;
+    min-width: 90px;
+  }
+  
+  .game-status {
+    font-size: 9px;
+    margin: 0 15px;
+    padding: 2px 6px;
+    min-width: 90px;
+  }
+  
+  .exit-button {
+    padding: 3px 6px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 320px) {
+  .game-stats {
+    padding: 2px 8px;
+  }
+  
+  .balance {
+    font-size: 10px;
+    padding: 2px 6px;
+    min-width: 80px;
+  }
+  
+  .game-status {
+    font-size: 8px;
+    margin: 0 10px;
+    padding: 2px 6px;
+    min-width: 80px;
+  }
+  
+  .exit-button {
+    padding: 2px 4px;
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 280px) {
+  .game-stats {
+    padding: 2px 6px;
+  }
+  
+  .balance {
+    font-size: 9px;
+    padding: 1px 4px;
+    min-width: 70px;
+  }
+  
+  .game-status {
+    font-size: 7px;
+    margin: 0 8px;
+    padding: 1px 4px;
+    min-width: 70px;
+  }
+  
+  .exit-button {
+    padding: 1px 3px;
+    font-size: 7px;
+  }
+}
+
+/* Orientacja pozioma na telefonach */
+@media (max-height: 480px) and (orientation: landscape) {
+  .game-stats {
+    padding: 3px 15px;
+  }
+  
+  .balance {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+  
+  .game-status {
+    font-size: 7px;
+    margin: 0 20px;
+    padding: 3px 8px;
+  }
+  
+  .exit-button {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+} 

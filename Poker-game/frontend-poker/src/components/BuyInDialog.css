@@ -1,0 +1,544 @@
+.buy-in-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.buy-in-dialog {
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(212, 175, 55, 0.05) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 
+    0 0 15px rgba(212, 175, 55, 0.2),
+    0 0 30px rgba(212, 175, 55, 0.1),
+    0 0 45px rgba(212, 175, 55, 0.05),
+    0 20px 40px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  animation: slideIn 0.3s ease-out;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.buy-in-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.buy-in-header h2 {
+  color: rgba(212, 175, 55, 0.9);
+  margin: 0 0 16px 0;
+  font-size: 28px;
+  font-weight: bold;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-shadow: 
+    0 0 10px rgba(212, 175, 55, 0.6),
+    0 0 20px rgba(212, 175, 55, 0.4),
+    0 0 30px rgba(212, 175, 55, 0.2),
+    1px 1px 3px rgba(0,0,0,0.6);
+  letter-spacing: 2px;
+  -webkit-text-stroke: 0.5px rgba(0,0,0,0.3);
+  animation: elegantGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes elegantGlow {
+  0% { 
+    text-shadow: 
+      0 0 10px rgba(212, 175, 55, 0.6),
+      0 0 20px rgba(212, 175, 55, 0.4),
+      0 0 30px rgba(212, 175, 55, 0.2),
+      1px 1px 3px rgba(0,0,0,0.6);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px rgba(212, 175, 55, 0.7),
+      0 0 30px rgba(212, 175, 55, 0.5),
+      0 0 45px rgba(212, 175, 55, 0.3),
+      1px 1px 3px rgba(0,0,0,0.6);
+  }
+  100% { 
+    text-shadow: 
+      0 0 10px rgba(212, 175, 55, 0.6),
+      0 0 20px rgba(212, 175, 55, 0.4),
+      0 0 30px rgba(212, 175, 55, 0.2),
+      1px 1px 3px rgba(0,0,0,0.6);
+  }
+}
+
+.buy-in-timer {
+  background: linear-gradient(45deg, 
+    rgba(184, 134, 11, 0.7) 0%, 
+    rgba(218, 165, 32, 0.6) 25%, 
+    rgba(255, 215, 0, 0.5) 50%, 
+    rgba(218, 165, 32, 0.6) 75%, 
+    rgba(184, 134, 11, 0.7) 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 16px;
+  display: inline-block;
+  animation: pulse 1s infinite;
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 
+    0 0 10px rgba(212, 175, 55, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  text-shadow: 
+    0 0 6px rgba(212, 175, 55, 0.6),
+    0 0 12px rgba(212, 175, 55, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.buy-in-content {
+  margin-bottom: 24px;
+}
+
+.buy-in-message {
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+  line-height: 1.5;
+  text-shadow: 
+    0 0 5px rgba(212, 175, 55, 0.3),
+    0 0 10px rgba(212, 175, 55, 0.1),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.buy-in-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.buy-in-form label {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: bold;
+  font-size: 16px;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  text-transform: uppercase;
+  text-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.6),
+    0 0 20px rgba(255, 255, 255, 0.3),
+    1px 1px 3px rgba(0,0,0,0.8);
+  letter-spacing: 1px;
+  -webkit-text-stroke: 0.5px rgba(0,0,0,0.3);
+}
+
+.buy-in-form input {
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(212, 175, 55, 0.05) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 0 5px rgba(212, 175, 55, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  text-shadow: 
+    0 0 3px rgba(212, 175, 55, 0.4),
+    0 0 6px rgba(212, 175, 55, 0.2),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.buy-in-form input::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+.buy-in-form input:focus {
+  outline: none;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(212, 175, 55, 0.15) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  border-color: rgba(212, 175, 55, 0.6);
+  color: #FFFFFF;
+  box-shadow: 
+    0 0 15px rgba(212, 175, 55, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    0 5px 15px rgba(0, 0, 0, 0.3);
+  text-shadow: 
+    0 0 6px rgba(212, 175, 55, 0.6),
+    0 0 12px rgba(212, 175, 55, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px) scale(1.05);
+}
+
+.buy-in-form input:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(212, 175, 55, 0.1) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border-color: rgba(212, 175, 55, 0.5);
+  color: #FFFFFF;
+  box-shadow: 
+    0 0 10px rgba(212, 175, 55, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2),
+    0 5px 15px rgba(0, 0, 0, 0.3);
+  text-shadow: 
+    0 0 4px rgba(212, 175, 55, 0.5),
+    0 0 8px rgba(212, 175, 55, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.buy-in-form input:hover::before {
+  left: 100%;
+}
+
+.buy-in-form input::placeholder {
+  color: rgba(212, 175, 55, 0.4);
+}
+
+.buy-in-form small {
+  color: rgba(212, 175, 55, 0.6);
+  font-size: 14px;
+  text-align: center;
+  text-shadow: 
+    0 0 4px rgba(212, 175, 55, 0.3),
+    0 0 8px rgba(212, 175, 55, 0.1),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.buy-in-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.buy-in-btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 
+    0 0 4px rgba(212, 175, 55, 0.4),
+    0 0 8px rgba(212, 175, 55, 0.2),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.buy-in-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+.buy-in-btn.confirm {
+  background: linear-gradient(135deg, 
+    rgba(184, 134, 11, 0.7) 0%, 
+    rgba(218, 165, 32, 0.6) 25%, 
+    rgba(255, 215, 0, 0.5) 50%, 
+    rgba(218, 165, 32, 0.6) 75%, 
+    rgba(184, 134, 11, 0.7) 100%);
+  color: white;
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  box-shadow: 
+    0 0 10px rgba(212, 175, 55, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.buy-in-btn.confirm:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05);
+  background: linear-gradient(135deg, 
+    rgba(184, 134, 11, 0.8) 0%, 
+    rgba(218, 165, 32, 0.7) 25%, 
+    rgba(255, 215, 0, 0.6) 50%, 
+    rgba(218, 165, 32, 0.7) 75%, 
+    rgba(184, 134, 11, 0.8) 100%);
+  border-color: rgba(212, 175, 55, 0.7);
+  box-shadow: 
+    0 0 20px rgba(212, 175, 55, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4);
+  text-shadow: 
+    0 0 6px rgba(212, 175, 55, 0.6),
+    0 0 12px rgba(212, 175, 55, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.buy-in-btn.confirm:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.buy-in-btn.confirm:disabled {
+  background: linear-gradient(135deg, 
+    rgba(100, 100, 100, 0.6) 0%, 
+    rgba(120, 120, 120, 0.5) 50%, 
+    rgba(100, 100, 100, 0.6) 100%);
+  border-color: rgba(100, 100, 100, 0.4);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 
+    0 0 10px rgba(100, 100, 100, 0.3),
+    inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: none;
+}
+
+.buy-in-btn.decline {
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(220, 53, 69, 0.3) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  color: white;
+  border: 2px solid rgba(220, 53, 69, 0.6);
+  box-shadow: 
+    0 0 15px rgba(220, 53, 69, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  text-shadow: 
+    0 0 8px rgba(220, 53, 69, 0.8),
+    0 0 15px rgba(220, 53, 69, 0.4),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.buy-in-btn.decline:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(220, 53, 69, 0.4) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border-color: rgba(220, 53, 69, 0.8);
+  box-shadow: 
+    0 0 25px rgba(220, 53, 69, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  text-shadow: 
+    0 0 10px rgba(220, 53, 69, 0.9),
+    0 0 20px rgba(220, 53, 69, 0.6),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.buy-in-btn.decline:hover::before {
+  left: 100%;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .buy-in-dialog {
+    padding: 24px;
+    margin: 20px;
+  }
+  
+  .buy-in-header h2 {
+    font-size: 24px;
+  }
+  
+  .buy-in-actions {
+    flex-direction: column;
+  }
+  
+  .buy-in-btn {
+    width: 100%;
+  }
+}
+
+/* Dodatkowa responsywność dla telefonów */
+@media (max-width: 480px) {
+  .buy-in-dialog {
+    padding: 20px;
+    margin: 15px;
+    max-width: 90%;
+  }
+  
+  .buy-in-header h2 {
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    margin-bottom: 12px;
+  }
+  
+  .buy-in-timer {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+  
+  .buy-in-message {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  
+  .buy-in-form label {
+    font-size: 14px;
+  }
+  
+  .buy-in-form input {
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+  
+  .buy-in-form small {
+    font-size: 12px;
+  }
+  
+  .buy-in-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    min-width: 120px;
+  }
+}
+
+/* Responsywność dla bardzo małych ekranów */
+@media (max-width: 360px) {
+  .buy-in-dialog {
+    padding: 16px;
+    margin: 10px;
+    max-width: 95%;
+  }
+  
+  .buy-in-header h2 {
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  
+  .buy-in-timer {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  
+  .buy-in-message {
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  
+  .buy-in-form {
+    gap: 10px;
+  }
+  
+  .buy-in-form label {
+    font-size: 13px;
+  }
+  
+  .buy-in-form input {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  
+  .buy-in-form small {
+    font-size: 11px;
+  }
+  
+  .buy-in-actions {
+    gap: 12px;
+  }
+  
+  .buy-in-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    min-width: 100px;
+  }
+}
+
+/* Orientacja pozioma na telefonach */
+@media (max-height: 480px) and (orientation: landscape) {
+  .buy-in-dialog {
+    padding: 16px;
+    margin: 10px;
+    max-width: 80%;
+  }
+  
+  .buy-in-header h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+  
+  .buy-in-timer {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .buy-in-message {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .buy-in-form {
+    gap: 8px;
+  }
+  
+  .buy-in-form label {
+    font-size: 12px;
+  }
+  
+  .buy-in-form input {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+  
+  .buy-in-form small {
+    font-size: 10px;
+  }
+  
+  .buy-in-actions {
+    gap: 10px;
+  }
+  
+  .buy-in-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    min-width: 90px;
+  }
+}

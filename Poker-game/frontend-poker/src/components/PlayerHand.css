@@ -1,0 +1,903 @@
+/* Player Hand Container */
+.player-hand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 4px;
+  transition: all 0.3s ease;
+}
+
+
+
+
+/* Cards container within hand */
+.hand-cards {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 130px; /* Zwiększone z 110px - większe karty gracza */
+  height: 143px; /* Zwiększone z 121px - proporcjonalnie */
+  background: transparent; /* Ensure no background */
+  transform: translateX(-3px); /* Przywrócone */
+}
+
+
+
+/* Card positioning within hand */
+.hand-cards .card {
+  position: absolute;
+  margin: 0;
+  transition: transform 0.3s ease;
+}
+
+/* Default card positioning - overlapping */
+.hand-cards .card:nth-child(1) {
+  left: 0px;
+  z-index: 1;
+}
+
+.hand-cards .card:nth-child(2) {
+  left: 25px; /* Zwiększone z 20px - proporcjonalne do nowych rozmiarów */
+  z-index: 2;
+}
+
+.hand-cards .card:nth-child(3) {
+  left: 40px; /* Zwiększone z 30px - proporcjonalne do nowych rozmiarów */
+  z-index: 3;
+}
+
+.hand-cards .card:nth-child(4) {
+  left: 55px; /* Zwiększone z 45px - proporcjonalne do nowych rozmiarów */
+  z-index: 4;
+}
+
+.hand-cards .card:nth-child(5) {
+  left: 70px; /* Zwiększone z 60px - proporcjonalne do nowych rozmiarów */
+  z-index: 5;
+}
+
+/* SPLIT HANDS - UPROSZCZONA WERSJA Z CSS VARIABLES */
+
+.player-hands-split .hand-cards {
+  /* Responsive scale - jedna wartość do zmiany per breakpoint */
+  --responsive-scale: 1;
+  width: calc(90px * var(--responsive-scale));
+  height: calc(99px * var(--responsive-scale));
+  transform: scale(1) translateX(0px);
+  
+
+}
+
+
+
+/* POPRAWIONE POZYCJONOWANIE SPLIT HANDS - JESZCZE WIĘKSZE ODSTĘPY */
+
+/* Lewa ręka split - równomierne rozłożenie */
+.player-hands-split .player-hand:first-child .hand-cards .card:nth-child(1) {
+  left: calc(-12px * var(--responsive-scale)); /* bliżej środka */
+}
+
+.player-hands-split .player-hand:first-child .hand-cards .card:nth-child(2) {
+  left: calc(13px * var(--responsive-scale)); /* większy odstęp od pierwszej */
+}
+
+.player-hands-split .player-hand:first-child .hand-cards .card:nth-child(3) {
+  left: calc(38px * var(--responsive-scale)); /* jeszcze większy odstęp */
+}
+
+.player-hands-split .player-hand:first-child .hand-cards .card:nth-child(4) {
+  left: calc(63px * var(--responsive-scale));
+}
+
+.player-hands-split .player-hand:first-child .hand-cards .card:nth-child(5) {
+  left: calc(88px * var(--responsive-scale));
+}
+
+/* Prawa ręka split - równomierne rozłożenie */
+.player-hands-split .player-hand:last-child .hand-cards .card:nth-child(1) {
+  left: calc(-12px * var(--responsive-scale));
+}
+
+.player-hands-split .player-hand:last-child .hand-cards .card:nth-child(2) {
+  left: calc(13px * var(--responsive-scale));
+}
+
+.player-hands-split .player-hand:last-child .hand-cards .card:nth-child(3) {
+  left: calc(38px * var(--responsive-scale));
+}
+
+.player-hands-split .player-hand:last-child .hand-cards .card:nth-child(4) {
+  left: calc(63px * var(--responsive-scale));
+}
+
+.player-hands-split .player-hand:last-child .hand-cards .card:nth-child(5) {
+  left: calc(88px * var(--responsive-scale));
+}
+
+/* Split hand value circle - smaller than regular */
+.player-hands-split .hand-value-circle {
+  position: absolute; /* Dodane - wymagane do działania bottom */
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
+  bottom: 3px; /* Przeniesione jeszcze niżej */
+  /* Automatyczne pozycjonowanie względem pierwszej karty */
+  left: calc(-15px * var(--responsive-scale) + 5px);
+  transform: none;
+}
+
+/* Prawa ręka - kółko po prawej stronie */
+.player-hands-split .player-hand:last-child .hand-value-circle {
+  left: auto;
+  right: calc(15px * var(--responsive-scale) + 5px);
+}
+
+/* Split hand result - smaller than regular */
+.player-hands-split .hand-result {
+  font-size: 9px;
+  padding: 4px 12px;
+  top: -20px; /* Przeniesione wyżej z 5px - nad kartami */
+  border-radius: 20px;
+  letter-spacing: 1.5px;
+}
+
+/* RESPONSIVE SCALING BASED ON NUMBER OF CARDS */
+
+/* When hand has 3 cards - slightly smaller */
+.hand-cards:has(.card:nth-child(3)) .card {
+  transform: scale(0.9);
+}
+
+.hand-cards:has(.card:nth-child(3)) .card:nth-child(2) {
+  left: 25px; /* Zwiększone z 20px - proporcjonalne do nowych rozmiarów */
+}
+
+.hand-cards:has(.card:nth-child(3)) .card:nth-child(3) {
+  left: 50px; /* Zwiększone z 40px - proporcjonalne do nowych rozmiarów */
+}
+
+/* When hand has 4 cards - smaller */
+.hand-cards:has(.card:nth-child(4)) .card {
+  transform: scale(0.8);
+}
+
+.hand-cards:has(.card:nth-child(4)) .card:nth-child(2) {
+  left: 20px; /* Zwiększone z 15px - proporcjonalne do nowych rozmiarów */
+}
+
+.hand-cards:has(.card:nth-child(4)) .card:nth-child(3) {
+  left: 40px; /* Zwiększone z 30px - proporcjonalne do nowych rozmiarów */
+}
+
+.hand-cards:has(.card:nth-child(4)) .card:nth-child(4) {
+  left: 60px; /* Zwiększone z 45px - proporcjonalne do nowych rozmiarów */
+}
+
+/* When hand has 5+ cards - much smaller */
+.hand-cards:has(.card:nth-child(5)) .card {
+  transform: scale(0.7);
+}
+
+.hand-cards:has(.card:nth-child(5)) .card:nth-child(2) {
+  left: 15px; /* Zwiększone z 12px - proporcjonalne do nowych rozmiarów */
+}
+
+.hand-cards:has(.card:nth-child(5)) .card:nth-child(3) {
+  left: 30px; /* Zwiększone z 24px - proporcjonalne do nowych rozmiarów */
+}
+
+.hand-cards:has(.card:nth-child(5)) .card:nth-child(4) {
+  left: 45px; /* Zwiększone z 36px - proporcjonalne do nowych rozmiarów */
+}
+
+.hand-cards:has(.card:nth-child(5)) .card:nth-child(5) {
+  left: 60px; /* Zwiększone z 48px - proporcjonalne do nowych rozmiarów */
+}
+
+/* Hand value circle */
+.hand-value-circle {
+  position: absolute;
+  bottom: 20px;
+  left: -5px;
+  transform: none;
+  width: 35px;
+  height: 35px;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+/* Poker hand display */
+.poker-hand-display {
+  position: absolute;
+  bottom: 20px;
+  left: -5px;
+  transform: none;
+  min-width: 60px;
+  max-width: 120px;
+  height: 35px;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  z-index: 10;
+  padding: 0 8px;
+  text-align: center;
+  line-height: 1.1;
+}
+
+/* Hand result display - NOWOCZESNY DESIGN */
+.hand-result {
+  position: absolute;
+  top: -15px; /* Obniżone z -25px - bliżej kart dla pojedynczej ręki */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  border-radius: 25px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  z-index: 15;
+  white-space: nowrap;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(0, 0, 0, 0.9);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Result type specific styles - NOWOCZESNE KOLORY */
+
+.hand-result.result-win {
+  background: rgba(0, 0, 0, 0.9);
+  color: #4CAF50;
+  border: 2px solid #4CAF50;
+  text-shadow: 
+    0 0 25px rgba(76, 175, 80, 0.8),
+    0 0 50px rgba(76, 175, 80, 0.5),
+    0 0 75px rgba(76, 175, 80, 0.3);
+  animation: modern-glow-green 3s ease-in-out infinite alternate;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 40px rgba(76, 175, 80, 0.4),
+    0 0 60px rgba(76, 175, 80, 0.2);
+}
+
+.hand-result.result-push {
+  background: rgba(0, 0, 0, 0.9);
+  color: #E0E0E0;
+  border: 2px solid #E0E0E0;
+  text-shadow: 
+    0 0 20px rgba(224, 224, 224, 0.6),
+    0 0 40px rgba(224, 224, 224, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 30px rgba(224, 224, 224, 0.2);
+}
+
+
+.hand-result.result-lose {
+  background: rgba(0, 0, 0, 0.9);
+  color: #DC143C;
+  border: 2px solid #DC143C;
+  text-shadow: 
+    0 0 25px rgba(220, 20, 60, 0.8),
+    0 0 50px rgba(220, 20, 60, 0.5),
+    0 0 75px rgba(220, 20, 60, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 40px rgba(220, 20, 60, 0.4),
+    0 0 60px rgba(220, 20, 60, 0.2);
+}
+
+/* Bet amount */
+.bet-amount {
+  position: absolute;
+  bottom: -71px; /* Przesunięte niżej z -65px - pod kółkiem z wartością */
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFFFFF;
+  font-size: 13px; /* Zmniejszone z 14px - mniejsza czcionka dla lepszego dopasowania */
+  font-weight: bold;
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.95);
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.7);
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  letter-spacing: 0.5px;
+  display: flex; /* Dodane - elementy w jednej linii */
+  align-items: center; /* Dodane - wycentrowanie w pionie */
+  gap: 6px; /* Dodane - odstęp między kółkiem a tekstem */
+}
+
+/* Split bet amounts styling */
+.hand-number-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.7);
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  flex-shrink: 0; /* Dodane - kółko nie zmniejsza się */
+}
+
+/* Stare animacje usunięte - zastąpione nowoczesnymi */
+
+/* NOWOCZESNE ANIMACJE GLOW */
+
+@keyframes modern-glow-green {
+  0% { 
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 40px rgba(76, 175, 80, 0.4),
+      0 0 60px rgba(76, 175, 80, 0.2);
+    text-shadow: 
+      0 0 25px rgba(76, 175, 80, 0.8),
+      0 0 50px rgba(76, 175, 80, 0.5),
+      0 0 75px rgba(76, 175, 80, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 50px rgba(76, 175, 80, 0.6),
+      0 0 80px rgba(76, 175, 80, 0.3);
+    text-shadow: 
+      0 0 30px rgba(76, 175, 80, 0.9),
+      0 0 60px rgba(76, 175, 80, 0.6),
+      0 0 90px rgba(76, 175, 80, 0.4);
+  }
+  100% { 
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 40px rgba(76, 175, 80, 0.4),
+      0 0 60px rgba(76, 175, 80, 0.2);
+    text-shadow: 
+      0 0 25px rgba(76, 175, 80, 0.8),
+      0 0 50px rgba(76, 175, 80, 0.5),
+      0 0 75px rgba(76, 175, 80, 0.3);
+  }
+}
+
+@keyframes modern-glow-red {
+  0% { 
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 40px rgba(220, 20, 60, 0.4),
+      0 0 60px rgba(220, 20, 60, 0.2);
+    text-shadow: 
+      0 0 25px rgba(220, 20, 60, 0.8),
+      0 0 50px rgba(220, 20, 60, 0.5),
+      0 0 75px rgba(220, 20, 60, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 50px rgba(220, 20, 60, 0.6),
+      0 0 80px rgba(220, 20, 60, 0.3);
+    text-shadow: 
+      0 0 30px rgba(220, 20, 60, 0.9),
+      0 0 60px rgba(220, 20, 60, 0.6),
+      0 0 90px rgba(220, 20, 60, 0.4);
+  }
+  100% { 
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 40px rgba(220, 20, 60, 0.4),
+      0 0 60px rgba(220, 20, 60, 0.2);
+    text-shadow: 
+      0 0 25px rgba(220, 20, 60, 0.8),
+      0 0 50px rgba(220, 20, 60, 0.5),
+      0 0 75px rgba(220, 20, 60, 0.3);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .hand-cards {
+    width: 115px; /* Zwiększone z 95px - proporcjonalne do nowych rozmiarów */
+    transform: translateX(-2px); /* Przywrócone */
+  }
+  
+  .hand-value-circle {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+    bottom: 18px;
+  }
+  
+  .hand-result {
+    font-size: 11px;
+    padding: 3px 10px;
+    top: -12px; /* Obniżone z -22px dla responsive */
+    letter-spacing: 1px;
+  }
+
+  /* Split hands responsive */
+  .player-hands-split .hand-cards {
+    --responsive-scale: 0.89; /* 80px/90px ≈ 0.89 */
+  }
+
+  .player-hands-split .hand-value-circle {
+    width: calc(30px * var(--responsive-scale));
+    height: calc(30px * var(--responsive-scale));
+    font-size: calc(12px * var(--responsive-scale));
+    bottom: calc(18px * var(--responsive-scale));
+  }
+
+
+
+  .player-hands-split .hand-result {
+    font-size: 8px;
+    padding: 3px 10px;
+    top: -18px; /* Przeniesione wyżej z 4px - nad kartami */
+    letter-spacing: 1px;
+  }
+  
+  .bet-amount {
+    font-size: 12px; /* Zmniejszone z 13px */
+    bottom: -61px; /* Przesunięte niżej z -58px - pod kółkiem z wartością */
+    gap: 5px; /* Zmniejszone z 6px */
+  }
+
+  .hand-number-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.95) 0%, 
+      rgba(20, 20, 20, 0.9) 50%, 
+      rgba(0, 0, 0, 0.95) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.7);
+    color: #FFFFFF;
+    text-shadow: 
+      0 0 5px rgba(255, 215, 0, 0.5),
+      0 0 10px rgba(255, 215, 0, 0.3),
+      1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 
+      0 0 8px rgba(255, 215, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .hand-cards {
+    width: 100px; /* Zwiększone z 80px - proporcjonalne do nowych rozmiarów */
+    height: 110px; /* Zwiększone z 88px - proporcjonalnie */
+    transform: translateX(-1px); /* Przywrócone */
+  }
+  
+  .hand-cards .card:nth-child(2) {
+    left: 30px; /* Zwiększone z 25px - proporcjonalne do nowych rozmiarów */
+  }
+  
+  .hand-cards .card:nth-child(3) {
+    left: 60px; /* Zmniejszone z 80px - lepsze nakładanie się */
+  }
+  
+  .hand-cards .card:nth-child(4) {
+    left: 90px; /* Zmniejszone z 120px - lepsze nakładanie się */
+  }
+  
+  .hand-cards .card:nth-child(5) {
+    left: 120px; /* Zmniejszone z 160px - lepsze nakładanie się */
+  }
+  
+  .hand-value-circle {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+    bottom: 16px;
+  }
+  
+  .hand-result {
+    font-size: 10px;
+    padding: 3px 8px;
+    top: -10px; /* Obniżone z -20px dla responsive */
+    letter-spacing: 0.5px;
+  }
+
+  /* Split hands responsive */
+  .player-hands-split .hand-cards {
+    --responsive-scale: 0.78; /* 70px/90px ≈ 0.78 */
+  }
+
+  .player-hands-split .hand-value-circle {
+    width: calc(30px * var(--responsive-scale));
+    height: calc(30px * var(--responsive-scale));
+    font-size: calc(12px * var(--responsive-scale));
+    bottom: calc(18px * var(--responsive-scale));
+  }
+
+
+
+  .player-hands-split .hand-result {
+    font-size: 7px;
+    padding: 2px 8px;
+    top: -16px; /* Przeniesione wyżej z 3px - nad kartami */
+    letter-spacing: 0.75px;
+  }
+  
+  .bet-amount {
+    font-size: 11px; /* Zmniejszone z 12px */
+    bottom: -56px; /* Przesunięte niżej z -53px - pod kółkiem z wartością */
+    gap: 4px; /* Zmniejszone z 5px */
+  }
+
+  .hand-number-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.95) 0%, 
+      rgba(20, 20, 20, 0.9) 50%, 
+      rgba(0, 0, 0, 0.95) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.7);
+    color: #FFFFFF;
+    text-shadow: 
+      0 0 5px rgba(255, 215, 0, 0.5),
+      0 0 10px rgba(255, 215, 0, 0.3),
+      1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 
+      0 0 8px rgba(255, 215, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .hand-cards {
+    width: 85px; /* Zwiększone z 65px - proporcjonalne do nowych rozmiarów */
+    height: 94px; /* Zwiększone z 72px - proporcjonalnie */
+    transform: translateX(0px);
+  }
+  
+  .hand-cards .card:nth-child(2) {
+    left: 25px; /* Zwiększone z 22px - proporcjonalne do nowych rozmiarów */
+  }
+  
+  .hand-cards .card:nth-child(3) {
+    left: 50px; /* Zmniejszone z 70px - lepsze nakładanie się */
+  }
+  
+  .hand-cards .card:nth-child(4) {
+    left: 75px; /* Zmniejszone z 105px - lepsze nakładanie się */
+  }
+  
+  .hand-cards .card:nth-child(5) {
+    left: 100px; /* Zmniejszone z 140px - lepsze nakładanie się */
+  }
+  
+  .hand-value-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+    bottom: 14px;
+  }
+  
+  .hand-result {
+    font-size: 9px;
+    padding: 2px 6px;
+    top: -8px; /* Obniżone z -18px dla responsive */
+    letter-spacing: 0.25px;
+  }
+
+  /* Split hands responsive */
+  .player-hands-split .hand-cards {
+    --responsive-scale: 0.67; /* 60px/90px ≈ 0.67 */
+  }
+
+  .player-hands-split .hand-value-circle {
+    width: calc(30px * var(--responsive-scale));
+    height: calc(30px * var(--responsive-scale));
+    font-size: calc(12px * var(--responsive-scale));
+    bottom: calc(18px * var(--responsive-scale));
+  }
+
+
+
+  .player-hands-split .hand-result {
+    font-size: 6px;
+    padding: 1px 6px;
+    top: -14px; /* Przeniesione wyżej z 2px - nad kartami */
+    letter-spacing: 0.5px;
+  }
+  
+  .bet-amount {
+    font-size: 10px; /* Zmniejszone z 11px */
+    bottom: -48px; /* Przesunięte niżej z -45px - pod kółkiem z wartością */
+    gap: 3px; /* Zmniejszone z 4px */
+  }
+
+  .hand-number-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    font-size: 7px;
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.95) 0%, 
+      rgba(20, 20, 20, 0.9) 50%, 
+      rgba(0, 0, 0, 0.95) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.7);
+    color: #FFFFFF;
+    text-shadow: 
+      0 0 5px rgba(255, 215, 0, 0.5),
+      0 0 10px rgba(255, 215, 0, 0.3),
+      1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 
+      0 0 8px rgba(255, 215, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 479px) {
+  .hand-cards {
+    width: 75px;
+    height: 83px;
+    transform: translateX(0px);
+    justify-content: flex-end; /* Dodane - karty na prawej stronie tylko dla małych ekranów */
+  }
+  
+  /* DODAJ TO - skalowanie samych kart */
+  .hand-cards .card {
+    transform: scale(0.85); /* Zmniejsz karty o 15% - jeszcze większe */
+  }
+  
+  /* DYNAMICZNE SKALOWANIE KART W ZALEŻNOŚCI OD LICZBY */
+  /* 2 karty - normalne skalowanie */
+  .hand-cards .card:nth-child(1) {
+    left: -18px; /* Pierwsza karta 18px w lewo od drugiej */
+  }
+  
+  .hand-cards .card:nth-child(2) {
+    left: 0px; /* Druga karta jako punkt odniesienia */
+  }
+  
+  /* 3 karty - mniejsze skalowanie */
+  .hand-cards:has(.card:nth-child(3)) .card {
+    transform: scale(0.75);
+  }
+  
+  .hand-cards:has(.card:nth-child(3)) .card:nth-child(1) {
+    left: -15px; /* Pierwsza karta 15px w lewo od drugiej */
+  }
+  
+  .hand-cards:has(.card:nth-child(3)) .card:nth-child(2) {
+    left: 0px; /* Druga karta jako punkt odniesienia */
+  }
+  
+  .hand-cards:has(.card:nth-child(3)) .card:nth-child(3) {
+    left: 15px; /* Trzecia karta 15px w prawo od drugiej */
+  }
+  
+  /* 4 karty - jeszcze mniejsze skalowanie */
+  .hand-cards:has(.card:nth-child(4)) .card {
+    transform: scale(0.65);
+  }
+  
+  .hand-cards:has(.card:nth-child(4)) .card:nth-child(1) {
+    left: -12px; /* Pierwsza karta 12px w lewo od drugiej */
+  }
+  
+  .hand-cards:has(.card:nth-child(4)) .card:nth-child(2) {
+    left: 0px; /* Druga karta jako punkt odniesienia */
+  }
+  
+  .hand-cards:has(.card:nth-child(4)) .card:nth-child(3) {
+    left: 12px; /* Trzecia karta 12px w prawo od drugiej */
+  }
+  
+  .hand-cards:has(.card:nth-child(4)) .card:nth-child(4) {
+    left: 24px; /* Czwarta karta 24px w prawo od drugiej */
+  }
+  
+  /* 5+ kart - bardzo małe skalowanie */
+  .hand-cards:has(.card:nth-child(5)) .card {
+    transform: scale(0.55);
+  }
+  
+  .hand-cards:has(.card:nth-child(5)) .card:nth-child(1) {
+    left: -10px; /* Pierwsza karta 10px w lewo od drugiej */
+  }
+  
+  .hand-cards:has(.card:nth-child(5)) .card:nth-child(2) {
+    left: 0px; /* Druga karta jako punkt odniesienia */
+  }
+  
+  .hand-cards:has(.card:nth-child(5)) .card:nth-child(3) {
+    left: 10px; /* Trzecia karta 10px w prawo od drugiej */
+  }
+  
+  .hand-cards:has(.card:nth-child(5)) .card:nth-child(4) {
+    left: 20px; /* Czwarta karta 20px w prawo od drugiej */
+  }
+  
+  .hand-cards:has(.card:nth-child(5)) .card:nth-child(5) {
+    left: 30px; /* Piąta karta 30px w prawo od drugiej */
+  }
+  
+  .hand-value-circle {
+    width: 26px;
+    height: 26px;
+    font-size: 10px;
+    bottom: 12px;
+  }
+  
+  .hand-result {
+    font-size: 8px;
+    padding: 2px 5px;
+    top: -6px; /* Obniżone z -16px dla responsive */
+    letter-spacing: 0.25px;
+  }
+
+  /* Split hands responsive */
+  .player-hands-split .hand-cards {
+    --responsive-scale: 0.56; /* 50px/90px ≈ 0.56 */
+  }
+
+  .player-hands-split .hand-value-circle {
+    position: absolute; /* Dodane - wymagane do działania bottom */
+    width: calc(30px * var(--responsive-scale));
+    height: calc(30px * var(--responsive-scale));
+    font-size: calc(12px * var(--responsive-scale));
+    bottom: calc(3px * var(--responsive-scale)); /* Przeniesione jeszcze niżej */
+  }
+
+
+
+  .player-hands-split .hand-result {
+    font-size: 5px;
+    padding: 1px 5px;
+    top: -12px; /* Przeniesione wyżej z 1px - nad kartami */
+    letter-spacing: 0.5px;
+  }
+  
+  .bet-amount {
+    font-size: 9px; /* Jeszcze mniejsza czcionka */
+    bottom: -55px !important; /* Obniżone z -42px - chip niżej z !important */
+    gap: 2px; /* Zmniejszone */
+  }
+
+  .hand-number-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 10px;
+    height: 10px;
+    font-size: 6px;
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.95) 0%, 
+      rgba(20, 20, 20, 0.9) 50%, 
+      rgba(0, 0, 0, 0.95) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.7);
+    color: #FFFFFF;
+    text-shadow: 
+      0 0 5px rgba(255, 215, 0, 0.5),
+      0 0 10px rgba(255, 215, 0, 0.3),
+      1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 
+      0 0 8px rgba(255, 215, 0, 0.2),
+      inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+} 
+
+/* Current hand highlighting */
+.player-hand.current-hand .bet-amount {
+  border: 2px solid rgba(255, 215, 0, 0.8);
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.4),
+    0 0 25px rgba(255, 215, 0, 0.2);
+  background: rgba(255, 215, 0, 0.1);
+  animation: currentBetGlow 2s ease-in-out infinite alternate;
+}
+
+/* Split hands current hand highlighting */
+.player-hands-split .player-hand.current-hand .bet-amount {
+  border: 2px solid rgba(255, 215, 0, 0.8);
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.4),
+    0 0 25px rgba(255, 215, 0, 0.2);
+  background: rgba(255, 215, 0, 0.1);
+  animation: currentBetGlow 2s ease-in-out infinite alternate;
+}
+
+/* Split hands non-current hand - subtle styling */
+.player-hands-split .player-hand:not(.current-hand) .bet-amount {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0.7;
+}
+
+@keyframes currentBetGlow {
+  0% {
+    box-shadow: 
+      0 0 15px rgba(255, 215, 0, 0.4),
+      0 0 25px rgba(255, 215, 0, 0.2);
+    background: rgba(255, 215, 0, 0.1);
+  }
+  100% {
+    box-shadow: 
+      0 0 20px rgba(255, 215, 0, 0.6),
+      0 0 30px rgba(255, 215, 0, 0.3);
+    background: rgba(255, 215, 0, 0.15);
+  }
+} 
