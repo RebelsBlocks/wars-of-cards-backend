@@ -36,6 +36,8 @@ export function useGame(gameData: GameSession | null, playerId: string | null): 
         availableActions: {
           canFold: false,
           canCheck: false,
+          canCall: false,
+          canRaise: false,
         },
         myPokerHand: '',
         potAmount: 0,
@@ -81,7 +83,7 @@ export function useGame(gameData: GameSession | null, playerId: string | null): 
 
     // 4. Poker-specific calculations
     const myPokerHand = currentHand && currentHand.cards.length > 0 
-      ? evaluatePokerHandWithCommunity(currentHand.cards, gameData.communityCards || [])
+      ? evaluatePokerHandWithCommunity(currentHand.cards, gameData.communityCards || []).rank
       : '';
     const potAmount = gameData.pot || 0;
     const currentBet = gameData.currentBet || 0;
@@ -89,8 +91,9 @@ export function useGame(gameData: GameSession | null, playerId: string | null): 
     // 5. Dostępne akcje poker
     const availableActions = {
       canFold: isMyTurn && !currentPlayer?.hasFolded,
-      canCheck: isMyTurn && (gameData.currentBet === 0 || currentPlayer?.currentBet === gameData.currentBet),
-      // Later: canCall, canRaise
+      canCheck: isMyTurn && ((gameData.currentBet || 0) === 0 || (currentPlayer?.currentBet || 0) >= (gameData.currentBet || 0)),
+      canCall: isMyTurn && ((gameData.currentBet || 0) > 0 && currentPlayer?.currentBet !== gameData.currentBet),
+      canRaise: isMyTurn && !currentPlayer?.hasFolded,
     };
 
     // Usuń logowanie które powoduje spam w konsoli
@@ -201,10 +204,12 @@ function calculateTimeRemaining(gameData: GameSession): number | undefined {
 /**
  * Hook pomocniczy do sprawdzania czy gracz może wykonać konkretną akcję
  */
-export function useCanPlayerAction(gameInfo: GameInfo, action: 'fold' | 'check'): boolean {
+export function useCanPlayerAction(gameInfo: GameInfo, action: 'fold' | 'check' | 'call' | 'raise'): boolean {
   switch (action) {
     case 'fold': return gameInfo.availableActions.canFold;
     case 'check': return gameInfo.availableActions.canCheck;
+    case 'call': return gameInfo.availableActions.canCall;
+    case 'raise': return gameInfo.availableActions.canRaise;
     default: return false;
   }
 }
