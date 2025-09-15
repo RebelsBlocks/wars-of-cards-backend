@@ -1,6 +1,8 @@
 import React from 'react';
-import { PlayerSpot } from './PlayerSpot';
-import type { Player } from '../types/game';
+import { PlayerHand } from './PlayerHand';
+import { evaluatePokerHandWithCommunity } from '../utils/cardHelpers';
+import type { Player, GameSession } from '../types/game';
+import { GameState } from '../types/game';
 import dealerImage from '../assets/vanessa.png';
 import './Table.css';
 
@@ -17,6 +19,7 @@ interface TableProps {
   showBettingInterface?: boolean;
   onPlaceBet?: (amount: number) => void;
   currentBalance?: number;
+  gameData?: GameSession; // Dodajemy gameData dla dealer button
 }
 
 export const Table: React.FC<TableProps> = ({ 
@@ -31,7 +34,8 @@ export const Table: React.FC<TableProps> = ({
   myPlayerId,
   showBettingInterface = false,
   onPlaceBet,
-  currentBalance
+  currentBalance,
+  gameData
 }) => {
   // Helper function to get player for specific seat
   const getPlayerForSeat = (seatNumber: number): Player | undefined => {
@@ -51,9 +55,19 @@ export const Table: React.FC<TableProps> = ({
         </div>
         
         <div className="table-surface">
+          {/* Pot Display - Holographic */}
+          {potAmount !== undefined && potAmount > 0 && (
+            <div className="holographic-pot-display">
+              <div className="hologram-container">
+                <div className="hologram-content">
+                  <div className="pot-amount">${potAmount}</div>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {/* Community Cards area */}
           <div className="community-cards-section">
-            <h3>Community Cards</h3>
             <div className="community-cards">
               {communityCards}
               {/* Hand result display */}
@@ -67,9 +81,6 @@ export const Table: React.FC<TableProps> = ({
             
             {/* Poker Game Info */}
             <div className="poker-info">
-              {potAmount !== undefined && potAmount > 0 && (
-                <div className="pot-display">Pot: ${potAmount}</div>
-              )}
               {currentBet !== undefined && currentBet > 0 && (
                 <div className="current-bet-display">Current Bet: ${currentBet}</div>
               )}
@@ -117,14 +128,9 @@ export const Table: React.FC<TableProps> = ({
             </div>
           )}
 
-          {/* Table text */}
-          <div className="table-text">
-            <div className="blackjack-text">BLACKJACK</div>
-            <div className="pays-text">PAYS 3 TO 2</div>
-            <div className="dealer-must-text">DEALER MUST STAND ON ALL 17s</div>
-          </div>
+          {/* Table text - removed for cleaner look */}
 
-          {/* Player spots */}
+          {/* Player positions */}
           <div className="player-spots">
             {[3, 2, 1].map((seatNumber) => {
               const player = getPlayerForSeat(seatNumber);
@@ -132,18 +138,48 @@ export const Table: React.FC<TableProps> = ({
               const isCurrentPlayer = player?.id === currentPlayerId;
               const isMySeat = player?.id === myPlayerId;
               
-              // Debug log removed for cleaner console
-              
               return (
-                <PlayerSpot
-                  key={seatNumber}
-                  seatNumber={seatNumber}
-                  player={player}
-                  isOccupied={isOccupied}
-                  isCurrentPlayer={isCurrentPlayer}
-                  isMySeat={isMySeat}
-                  communityCards={communityCardsData}
-                />
+                <div 
+                  key={seatNumber} 
+                  className={`player-position ${isOccupied ? 'occupied' : 'vacant'} ${isCurrentPlayer ? 'current-player' : ''} ${isMySeat ? 'my-seat' : ''} ${player?.state === 'OBSERVING' ? 'observing' : ''}`}
+                >
+                  <div className="seat-number">SEAT {seatNumber}</div>
+                  
+                  {/* 🎯 Dealer Button */}
+                  {isOccupied && player && gameData?.dealerButtonPosition === seatNumber && (
+                    <div className="dealer-button">D</div>
+                  )}
+                  
+                  {player?.state === 'OBSERVING' && (
+                    <div className="observing-indicator">OBSERVING</div>
+                  )}
+                  
+                  {isOccupied && player ? (
+                    <>
+                      <div className="player-hands-single">
+                        <PlayerHand
+                          cards={player.hands[0]?.cards?.map(card => ({
+                            ...card,
+                            isFaceUp: player.id === myPlayerId // UKRYJ karty innych graczy
+                          })) || []}
+                          pokerHand={player.id === myPlayerId && player.hands[0]?.cards && player.hands[0].cards.length > 0 ? 
+                            evaluatePokerHandWithCommunity(player.hands[0].cards, communityCardsData).rank : ''}
+                          handResult={player.hands[0]?.result}
+                          betAmount={player.currentBet || 0}
+                          isCurrentHand={isCurrentPlayer}
+                          handIndex={0}
+                          playerState={player.state}
+                          showBetAmount={gameData?.state === GameState.PLAYER_TURN}
+                        />
+                      </div>
+                      <div className="player-balance">
+                        ${player.balance}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="vacant-seat">VACANT</div>
+                  )}
+                </div>
               );
             })}
           </div>
