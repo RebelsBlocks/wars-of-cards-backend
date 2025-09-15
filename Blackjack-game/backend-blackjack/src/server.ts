@@ -10,6 +10,7 @@ import {
   InterServerEvents, 
   SocketData 
 } from './types/socket';
+import { Socket } from 'socket.io';
 
 const app = express();
 const httpServer = createServer(app);
@@ -36,10 +37,10 @@ const gameService = new GameService(io);
 app.use('/api', createGameRouter(gameService));
 
 // WebSocket handlers
-io.on('connection', (socket) => {
+io.on('connection', (socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>) => {
   console.log('Nowe połączenie WebSocket:', socket.id);
 
-  socket.on('joinGame', (gameId, playerId) => {
+  socket.on('joinGame', (gameId: string, playerId: string) => {
     socket.data.gameId = gameId;
     socket.data.playerId = playerId;
     socket.join(gameId);
@@ -55,7 +56,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('leaveGame', (gameId, playerId) => {
+  socket.on('leaveGame', (gameId: string, playerId: string) => {
     try {
       gameService.leaveGame(gameId, playerId);
     } catch (error) {
@@ -68,7 +69,27 @@ io.on('connection', (socket) => {
     console.log(`Gracz ${playerId} opuścił grę ${gameId}`);
   });
 
-  socket.on('disconnect', (reason) => {
+  socket.on('requestBuyIn', (gameId: string, playerId: string, amount: number) => {
+    try {
+      console.log(`💰 Buy-in request from player ${playerId}: $${amount}`);
+      gameService.handleBuyInRequest(gameId, playerId, amount);
+    } catch (error) {
+      console.error('Error handling buy-in request:', error);
+      socket.emit('error', error instanceof Error ? error.message : 'Błąd podczas buy-in');
+    }
+  });
+
+  socket.on('declineBuyIn', (gameId: string, playerId: string) => {
+    try {
+      console.log(`🚪 Buy-in declined by player ${playerId}`);
+      gameService.handleBuyInDecline(gameId, playerId);
+    } catch (error) {
+      console.error('Error handling buy-in decline:', error);
+      socket.emit('error', error instanceof Error ? error.message : 'Błąd podczas odmowy buy-in');
+    }
+  });
+
+  socket.on('disconnect', (reason: string) => {
     console.log('Player disconnected:', reason, 'Socket data:', socket.data);
     const { gameId, playerId } = socket.data;
     if (gameId && playerId) {
