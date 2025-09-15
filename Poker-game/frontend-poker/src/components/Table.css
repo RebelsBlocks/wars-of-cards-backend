@@ -3,28 +3,29 @@
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center; /* Zmienione na center - stół w centrum */
   background: radial-gradient(ellipse at center, #1e2a3a 0%, #0f1419 100%);
   overflow: hidden;
   flex: 1;
-  padding-bottom: 80px;
+  padding-top: 220px; /* Jeszcze bardziej zwiększony - stół jeszcze niżej - będzie super! */
+  padding-bottom: 20px; /* Zachowany dolny padding */
 }
 
-/* Klasyczny kształt stołu kasyna */
+/* Klasyczny kształt stołu kasyna - bardziej kompaktowy */
 .table-frame {
-  width: 120%; /* Zwiększamy szerokość dla lepszych proporcji */
-  height: 380px; /* Zmniejszamy wysokość - bardziej płaski, elegancki kształt */
+  width: 80%; /* Jeszcze bardziej zmniejszone */
+  height: 320px; /* Zmniejszona wysokość */
   position: relative;
-  margin: 0 auto 0 auto; /* Centrujemy stół i usuwamy margin na dole */
+  margin: 0 auto; /* Usunięty ujemny margin - stół w naturalnej pozycji */
 }
 
 .table-surface {
   width: 100%;
   height: 100%;
   background: radial-gradient(ellipse at center, #2d7a2d 0%, #1a5f1a 100%);
-  border-radius: 0 0 60% 60%; /* Bardziej eleganckie zaokrąglenie */
+  border-radius: 220px / 100px; /* Jeszcze bardziej zaokrąglone boki */
   position: relative;
-  padding: 25px 25px 0 25px; /* Zwiększamy padding dla lepszych proporcji, ale usuwamy padding na dole */
+  padding: 25px 25px 0 25px;
   /* Elegancka drewniana ramka */
   box-shadow: 
     /* Wewnętrzny cień dla głębi */
@@ -66,7 +67,7 @@
     rgba(0,0,0,0.08) 3px,
     rgba(0,0,0,0.08) 6px
   );
-  border-radius: 0 0 50% 50%;
+  border-radius: 240px / 120px; /* Dostosowane do nowego kształtu */
   pointer-events: none;
   z-index: -1;
 }
@@ -85,7 +86,7 @@
 /* Community Cards Section */
 .community-cards-section {
   position: absolute;
-  top: 35%;
+  top: 25%;
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
@@ -108,21 +109,34 @@
 
 .community-cards {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: 4px;
+  gap: 0px; /* usuń całkowicie */
   flex-wrap: nowrap;
   min-height: 60px;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+/* Usuń marginesy i border tylko dla community cards */
+.community-cards .card {
+  margin: 0 !important; /* usuwa margin: 3px z Card.css */
+  border: none !important; /* usuwa border który dodaje 4px odstępu */
+}
+
+/* Nakładanie kart dla community cards */
+.community-cards .card:not(:first-child) {
+  margin-left: -55px !important; /* jeszcze większe nakładanie kart */
 }
 
 /* Kontener grafiki dealera */
 .dealer-image-container {
   position: absolute;
-  top: -349px; /* Jeszcze wyżej (było -320px) */
+  top: -295px; /* Trochę wyżej */
   left: 50%;
   transform: translateX(-50%);
-  width: 420px; /* Większa (było 350px) */
-  height: 420px; /* Większa (było 350px) */
+  width: 350px; /* Zmniejszone do mniejszego stołu */
+  height: 350px; /* Zmniejszone do mniejszego stołu */
   z-index: 999;
   pointer-events: none;
 }
@@ -440,30 +454,239 @@
   z-index: 3; /* Niżej niż karty, wyżej niż napisy */
 }
 
-/* Przesuwamy miejsca 1 i 3 do góry, a miejsce 2 zostawiamy niżej */
-/* Teraz: first-child = seat 3 (lewy), last-child = seat 1 (prawy) */
+/* Wszystkie miejsca graczy na tej samej wysokości */
 .player-spots .player-spot:first-child,
-.player-spots .player-spot:last-child {
-  margin-bottom: 35px; /* Zwiększone z 25px */
-}
-
-/* Przesuwamy środkowe miejsce w dół */
+.player-spots .player-spot:last-child,
 .player-spots .player-spot:nth-child(2) {
-  margin-bottom: -10px;
+  margin-bottom: 0px; /* Wszystkie na tej samej wysokości */
 }
 
-/* Player spot styles moved to PlayerSpot.css */
+/* Player position styles (moved from PlayerSpot.css) */
+.player-position {
+  width: 70px; /* Zmniejszone z 90px */
+  height: 70px; /* Zmniejszone z 90px */
+  position: relative;
+  padding: 5px; /* Zmniejszone z 6px */
+  border-radius: 50%;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  margin: 0 10px; /* Zmniejszone z 12px */
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-position.occupied {
+  border-color: rgba(255, 215, 0, 0.6);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(30, 20, 0, 0.9) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.3),
+    inset 0 0 10px rgba(255, 215, 0, 0.05);
+}
+
+.player-position.vacant {
+  opacity: 0.8;
+  border-style: dashed;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+}
+
+.player-position.current-player {
+  border-color: rgba(255, 215, 0, 0.4);
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.2),
+    0 0 15px rgba(255, 215, 0, 0.1),
+    inset 0 0 10px rgba(255, 215, 0, 0.05);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  animation: currentPlayerGlow 2s ease-in-out infinite alternate;
+  backdrop-filter: blur(5px);
+}
+
+.player-position.observing {
+  border-color: rgba(255, 165, 0, 0.6);
+  box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.85) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.85) 100%);
+}
+
+/* Grubsza oblamówka dla miejsca aktualnego użytkownika */
+.player-position.my-seat {
+  border-width: 4px;
+  border-color: rgba(25, 25, 112, 0.95);
+  box-shadow: 
+    0 0 15px rgba(25, 25, 112, 0.5),
+    inset 0 0 8px rgba(25, 25, 112, 0.15);
+}
+
+/* Seat number label */
+.seat-number {
+  position: absolute;
+  top: -24px; /* Przeniesione wyżej z -20px */
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFFFFF;
+  font-size: 10px; /* Zmniejszone z 12px */
+  font-weight: bold;
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.7);
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  letter-spacing: 0.5px;
+}
+
+/* Dealer Button */
+.dealer-button {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(220, 220, 220, 0.9) 50%, 
+    rgba(200, 200, 200, 0.95) 100%);
+  border: 2px solid #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000;
+  text-shadow: none;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  z-index: 15; /* Wyżej niż seat-number */
+}
+
+/* Vacant seat label */
+.vacant-seat {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 8px; /* Zmniejszone z 10px */
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px; /* Zmniejszone z 1px */
+  line-height: 1.1; /* Zmniejszone z 1.2 */
+}
+
+/* Observing indicator */
+.observing-indicator {
+  position: absolute;
+  top: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFA500;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 165, 0, 0.5);
+}
+
+/* Player balance display */
+.player-balance {
+  position: absolute;
+  bottom: -30px; /* Dokładnie tam gdzie był bet-amount */
+  left: 50%;
+  transform: translateX(-50%);
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 215, 0, 0.7);
+  text-shadow: 
+    0 0 5px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 215, 0, 0.3),
+    1px 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  letter-spacing: 0.5px;
+}
+
+/* Single hand container */
+.player-hands-single {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  position: absolute;
+  top: -100px; /* Zmniejszone z -120px - mniejsze karty */
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 8px;
+  max-width: 180px; /* Zmniejszone z 200px */
+}
+
+/* Animation for current player glow */
+@keyframes currentPlayerGlow {
+  0% {
+    box-shadow: 
+      0 0 8px rgba(255, 215, 0, 0.2),
+      0 0 15px rgba(255, 215, 0, 0.1),
+      inset 0 0 10px rgba(255, 215, 0, 0.05);
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.95) 0%, 
+      rgba(20, 20, 20, 0.9) 50%, 
+      rgba(0, 0, 0, 0.95) 100%);
+  }
+  100% {
+    box-shadow: 
+      0 0 12px rgba(255, 215, 0, 0.3),
+      0 0 20px rgba(255, 215, 0, 0.15),
+      inset 0 0 15px rgba(255, 215, 0, 0.08);
+    background: linear-gradient(135deg, 
+      rgba(0, 0, 0, 0.95) 0%, 
+      rgba(30, 30, 30, 0.9) 50%, 
+      rgba(0, 0, 0, 0.95) 100%);
+  }
+}
 
 /* Hand result styles moved to PlayerHand.css */
 
 /* Responsywność */
 @media (max-width: 1400px) {
   .table-container {
-    padding-bottom: 80px;
+    padding-top: 180px; /* Jeszcze bardziej zwiększony - stół jeszcze niżej - będzie super! */
+    padding-bottom: 40px; /* Dostosowane do głównej wersji */
   }
 
   .table-frame {
     height: 350px; /* Dostosowane do nowych proporcji */
+    margin: 0 auto; /* Usunięty ujemny margin */
   }
 
 
@@ -480,7 +703,7 @@
   }
 
   .community-cards {
-    gap: 3px;
+    gap: 0px;
     min-height: 50px;
   }
 
@@ -517,11 +740,13 @@
 
 @media (max-width: 1024px) {
   .table-container {
-    padding-bottom: 70px;
+    padding-top: 120px; /* Jeszcze bardziej zwiększony - stół jeszcze niżej - będzie super! */
+    padding-bottom: 30px; /* Dostosowane do głównej wersji */
   }
 
   .table-frame {
     height: 320px; /* Dostosowane do nowych proporcji */
+    margin: 0 auto; /* Usunięty ujemny margin */
   }
 
   .table-surface {
@@ -542,7 +767,7 @@
   }
 
   .community-cards {
-    gap: 2px;
+    gap: 0px;
     min-height: 45px;
   }
 
@@ -561,28 +786,42 @@
     bottom: 32px;
   }
 
-  .player-spot {
+  .player-position {
     width: 60px; /* Zmniejszone z 80px */
     height: 60px; /* Zmniejszone z 80px */
     margin: 0 6px; /* Zmniejszone z 8px */
   }
 
-  .player-spots .player-spot:first-child,
-  .player-spots .player-spot:last-child {
-    margin-bottom: 20px;
+  .player-spots .player-position:first-child,
+  .player-spots .player-position:last-child,
+  .player-spots .player-position:nth-child(2) {
+    margin-bottom: 0px; /* Wszystkie na tej samej wysokości */
   }
 
-  .player-spots .player-spot:nth-child(2) {
-    margin-bottom: -6px;
-  }
-
-  .spot-number {
+  .seat-number {
     font-size: 11px;
     top: -22px;
   }
 
-  .vacant-label {
+  .dealer-button {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    top: -6px;
+    right: -6px;
+  }
+
+  .vacant-seat {
     font-size: 9px;
+  }
+
+  .player-hands-single {
+    top: -85px; /* Zmniejszone z -100px - mniejsze karty */
+  }
+
+  .player-balance {
+    bottom: -25px; /* Pod kółkiem gracza */
+    font-size: 11px;
   }
 
   .hand-value-circle {
@@ -612,7 +851,8 @@
 
 @media (max-width: 768px) {
   .table-container {
-    padding-bottom: 60px;
+    padding-top: 110px; /* Jeszcze bardziej zwiększony - stół jeszcze niżej - będzie super! */
+    padding-bottom: 20px; /* Dostosowane do głównej wersji */
   }
 
   .dealer-image-container {
@@ -621,6 +861,7 @@
 
   .table-frame {
     height: 290px; /* Dostosowane do nowych proporcji */
+    margin: 0 auto; /* Usunięty ujemny margin */
   }
 
   .table-surface {
@@ -647,7 +888,7 @@
   }
 
   .community-cards {
-    gap: 2px;
+    gap: 0px;
     min-height: 40px;
   }
 
@@ -678,28 +919,42 @@
     bottom: 28px;
   }
 
-  .player-spot {
+  .player-position {
     width: 55px; /* Zmniejszone z 70px */
     height: 55px; /* Zmniejszone z 70px */
     margin: 0 5px; /* Zmniejszone z 6px */
   }
 
-  .player-spots .player-spot:first-child,
-  .player-spots .player-spot:last-child {
-    margin-bottom: 15px;
+  .player-spots .player-position:first-child,
+  .player-spots .player-position:last-child,
+  .player-spots .player-position:nth-child(2) {
+    margin-bottom: 0px; /* Wszystkie na tej samej wysokości */
   }
 
-  .player-spots .player-spot:nth-child(2) {
-    margin-bottom: -5px;
-  }
-
-  .spot-number {
+  .seat-number {
     font-size: 10px;
     top: -20px;
   }
 
-  .vacant-label {
+  .dealer-button {
+    width: 18px;
+    height: 18px;
+    font-size: 9px;
+    top: -5px;
+    right: -5px;
+  }
+
+  .vacant-seat {
     font-size: 8px;
+  }
+
+  .player-hands-single {
+    top: -75px; /* Zmniejszone z -90px - mniejsze karty */
+  }
+
+  .player-balance {
+    bottom: -22px; /* Pod kółkiem gracza */
+    font-size: 10px;
   }
 
   .hand-value-circle {
@@ -729,7 +984,8 @@
 
 @media (max-width: 480px) {
   .table-container {
-    padding-bottom: 50px;
+    padding-top: 100px; /* Jeszcze bardziej zwiększony - stół jeszcze niżej - będzie super! */
+    padding-bottom: 15px; /* Dostosowane do głównej wersji */
   }
 
   .dealer-image-container {
@@ -740,6 +996,7 @@
 
   .table-frame {
     height: 265px; /* Dostosowane do nowych proporcji */
+    margin: 0 auto; /* Usunięty ujemny margin */
   }
 
   .table-surface {
@@ -765,7 +1022,7 @@
   }
 
   .community-cards {
-    gap: 1px;
+    gap: 0px;
     min-height: 35px;
   }
 
@@ -787,35 +1044,41 @@
     bottom: 25px;
   }
 
-  .player-spot {
+  .player-position {
     width: 50px; /* Zmniejszone z 60px */
     height: 50px; /* Zmniejszone z 60px */
     margin: 0 4px; /* Zmniejszone z 5px */
   }
 
-  .player-spots .player-spot:first-child,
-  .player-spots .player-spot:last-child {
-    margin-bottom: 12px;
+  .player-spots .player-position:first-child,
+  .player-spots .player-position:last-child,
+  .player-spots .player-position:nth-child(2) {
+    margin-bottom: 0px; /* Wszystkie na tej samej wysokości */
   }
 
-  .player-spots .player-spot:nth-child(2) {
-    margin-bottom: -4px;
-  }
-
-  .spot-number {
+  .seat-number {
     font-size: 9px;
     top: -18px;
     padding: 1px 5px;
   }
 
-  .vacant-label {
+  .vacant-seat {
     font-size: 7px;
+  }
+
+  .player-hands-single {
+    top: -65px; /* Zmniejszone z -80px - mniejsze karty */
   }
 
   .bet-amount {
     font-size: 12px;
     bottom: -30px; /* Przesunięte niżej z -20px - pod kółkiem z wartością */
     padding: 2px 6px;
+  }
+
+  .player-balance {
+    bottom: -25px; /* Pod kółkiem gracza */
+    font-size: 11px;
   }
 
   .hand-value-circle {
@@ -926,7 +1189,7 @@
   }
 
   .community-cards {
-    gap: 2px;
+    gap: 0px;
     min-height: 40px;
   }
 
@@ -934,19 +1197,16 @@
     bottom: 20px;
   }
 
-  .player-spot {
+  .player-position {
     width: 55px;
     height: 55px;
     margin: 0 4px;
   }
 
-  .player-spots .player-spot:first-child,
-  .player-spots .player-spot:last-child {
-    margin-bottom: 10px;
-  }
-
-  .player-spots .player-spot:nth-child(2) {
-    margin-bottom: -3px;
+  .player-spots .player-position:first-child,
+  .player-spots .player-position:last-child,
+  .player-spots .player-position:nth-child(2) {
+    margin-bottom: 0px; /* Wszystkie na tej samej wysokości */
   }
 
   .dealer-area {
@@ -955,13 +1215,22 @@
 
 
 
-  .spot-number {
+  .seat-number {
     font-size: 8px;
     top: -16px;
   }
 
-  .vacant-label {
+  .vacant-seat {
     font-size: 6px;
+  }
+
+  .player-hands-single {
+    top: -55px; /* Zmniejszone z -70px - mniejsze karty */
+  }
+
+  .player-balance {
+    bottom: -20px; /* Pod kółkiem gracza */
+    font-size: 10px;
   }
 
   .hand-value-circle {
@@ -988,6 +1257,97 @@
     bottom: -7px; /* Przeniesione jeszcze niżej */
   }
 } 
+
+/* Holographic Pot Display */
+.holographic-pot-display {
+  position: absolute;
+  top: -5px; /* Pozycja pod grafiką dealera, nad stołem */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; /* Wyższy z-index niż dealer (999) */
+  pointer-events: none;
+}
+
+.holographic-pot-display .hologram-container {
+  position: relative;
+  width: 90px;
+  height: 45px;
+  pointer-events: none;
+  animation: potGlow 2s ease-in-out infinite alternate;
+}
+
+.holographic-pot-display .hologram-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(20, 20, 20, 0.9) 50%, 
+    rgba(0, 0, 0, 0.95) 100%);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  border-radius: 8px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 0 12px rgba(255, 215, 0, 0.2),
+    0 0 24px rgba(255, 215, 0, 0.1),
+    0 5px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.holographic-pot-display .hologram-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.pot-amount {
+  color: #FFD700;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 
+    0 0 8px rgba(255, 215, 0, 0.6),
+    0 0 16px rgba(255, 215, 0, 0.3),
+    0 0 24px rgba(255, 215, 0, 0.1);
+  letter-spacing: 0.5px;
+  z-index: 1;
+  position: relative;
+}
+
+/* Animacje dla pot display */
+@keyframes potGlow {
+  0% {
+    box-shadow: 
+      0 0 12px rgba(255, 215, 0, 0.2),
+      0 0 24px rgba(255, 215, 0, 0.1),
+      0 5px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.4);
+  }
+  100% {
+    box-shadow: 
+      0 0 18px rgba(255, 215, 0, 0.3),
+      0 0 36px rgba(255, 215, 0, 0.15),
+      0 5px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 215, 0, 0.6);
+  }
+}
+
+@keyframes hologramScan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
 
 /* Holographic Betting Interface */
 .holographic-betting-interface {
@@ -1204,6 +1564,15 @@
 
 /* Responsywność dla hologramu */
 @media (max-width: 1400px) {
+  .holographic-pot-display .hologram-container {
+    width: 80px;
+    height: 40px;
+  }
+  
+  .pot-amount {
+    font-size: 16px;
+  }
+  
   .hologram-container {
     width: 300px;
     height: 130px;
@@ -1225,6 +1594,15 @@
 }
 
 @media (max-width: 1024px) {
+  .holographic-pot-display .hologram-container {
+    width: 75px;
+    height: 37px;
+  }
+  
+  .pot-amount {
+    font-size: 15px;
+  }
+  
   .hologram-container {
     width: 290px;
     height: 125px;
@@ -1246,6 +1624,15 @@
 }
 
 @media (max-width: 768px) {
+  .holographic-pot-display .hologram-container {
+    width: 70px;
+    height: 35px;
+  }
+  
+  .pot-amount {
+    font-size: 14px;
+  }
+  
   .hologram-container {
     width: 280px;
     height: 120px;
@@ -1271,6 +1658,15 @@
 }
 
 @media (max-width: 480px) {
+  .holographic-pot-display .hologram-container {
+    width: 65px;
+    height: 32px;
+  }
+  
+  .pot-amount {
+    font-size: 13px;
+  }
+  
   .hologram-container {
     width: 240px;
     height: 100px;
@@ -1296,6 +1692,15 @@
 }
 
 @media (max-width: 360px) {
+  .holographic-pot-display .hologram-container {
+    width: 60px;
+    height: 30px;
+  }
+  
+  .pot-amount {
+    font-size: 12px;
+  }
+  
   .hologram-container {
     width: 220px;
     height: 90px;
@@ -1322,6 +1727,15 @@
 
 /* Orientacja pozioma na telefonach */
 @media (max-height: 480px) and (orientation: landscape) {
+  .holographic-pot-display .hologram-container {
+    width: 65px;
+    height: 32px;
+  }
+  
+  .pot-amount {
+    font-size: 13px;
+  }
+  
   .hologram-container {
     width: 260px;
     height: 80px;
