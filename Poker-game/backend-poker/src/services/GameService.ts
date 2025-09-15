@@ -4,6 +4,7 @@ import { ServerToClientEvents, ClientToServerEvents, InterServerEvents, SocketDa
 import { v4 as uuidv4 } from 'uuid';
 import { Hand } from '../models/Hand';
 import { Game } from '../models/Game';
+import { evaluatePokerHandWithCommunity } from '../utils/cardHelpers';
 
 // Typ dla stanu gry wysyłanego do klienta (z occupiedSeats jako array)
 type GameStateForClient = Omit<GameSession, 'occupiedSeats'> & {
@@ -374,9 +375,9 @@ export class GameService {
       throw new Error('Move not allowed at this time');
     }
 
-    // Gracz czeka (możliwe tylko gdy currentBet = 0)
-    if (game.currentBet && game.currentBet > 0) {
-      throw new Error('Cannot check when there is a bet');
+    // Gracz czeka (możliwe gdy currentBet = 0 lub gracz już wyrównał stawkę)
+    if ((game.currentBet || 0) > 0 && (player.currentBet || 0) < (game.currentBet || 0)) {
+      throw new Error('Cannot check - must call or fold');
     }
 
     // Resetuj timeout dla aktualnego ruchu
@@ -857,13 +858,25 @@ export class GameService {
         }
         this.processCheck(game.id, player.id);
       } else {
-        console.log(`⏰ Move timeout for player ${player.id} - auto CALL (currentBet: ${game.currentBet})`);
-        if (this.io) {
-          this.io.to(game.id).emit('notification', 
-            `Czas na ruch gracza ${player.seatNumber} upłynął. Automatycznie wykonano CALL.`
-          );
+        // Sprawdź czy gracz może wyrównać stawkę
+        const callAmount = (game.currentBet || 0) - (player.currentBet || 0);
+        if (callAmount > 0 && player.balance >= callAmount) {
+          console.log(`⏰ Move timeout for player ${player.id} - auto CALL (currentBet: ${game.currentBet})`);
+          if (this.io) {
+            this.io.to(game.id).emit('notification', 
+              `Czas na ruch gracza ${player.seatNumber} upłynął. Automatycznie wykonano CALL.`
+            );
+          }
+          this.processCall(game.id, player.id);
+        } else {
+          console.log(`⏰ Move timeout for player ${player.id} - auto FOLD (cannot call)`);
+          if (this.io) {
+            this.io.to(game.id).emit('notification', 
+              `Czas na ruch gracza ${player.seatNumber} upłynął. Automatycznie wykonano FOLD.`
+            );
+          }
+          this.processFold(game.id, player.id);
         }
-        this.processCall(game.id, player.id);
       }
     }, this.MOVE_TIMEOUT);
     
@@ -1588,17 +1601,65 @@ export class GameService {
         }
       });
     } else {
-      // Wielu graczy - na razie podziel pot równo (później: hand rankings)
-      const winnings = Math.floor(pot / activePlayers.length);
-      
-      activePlayers.forEach(player => {
-        player.balance += winnings;
-        player.hands[0].result = HandResult.WIN; // Tie for now
+      // ✅ POKER: Porównaj ręce i określ zwycięzców
+      const playersWithHands = activePlayers.map(player => {
+        const playerCards = player.hands[0].cards;
+        const communityCards = game.communityCards || [];
+        const allCards = [...playerCards, ...communityCards];
+        
+        const handEvaluation = evaluatePokerHandWithCommunity(playerCards, communityCards);
+        
+        console.log(`🃏 Player ${player.seatNumber}: ${handEvaluation.rank} (value: ${handEvaluation.value})`);
+        
+        return {
+          player,
+          handRank: handEvaluation.rank,
+          handValue: handEvaluation.value,
+          allCards
+        };
       });
       
-      console.log(`🏆 ${activePlayers.length} players split $${pot} ($${winnings} each)`);
-      this.io.to(game.id).emit('notification', 
-        `${activePlayers.length} players split the pot: $${winnings} each`);
+      // Znajdź najwyższą wartość ręki
+      const maxHandValue = Math.max(...playersWithHands.map(p => p.handValue));
+      const winners = playersWithHands.filter(p => p.handValue === maxHandValue);
+      
+      if (winners.length === 1) {
+        // Jeden zwycięzca
+        const winner = winners[0];
+        winner.player.balance += pot;
+        winner.player.hands[0].result = HandResult.WIN;
+        
+        console.log(`🏆 Player ${winner.player.seatNumber} wins $${pot} with ${winner.handRank}`);
+        this.io.to(game.id).emit('notification', 
+          `Player ${winner.player.seatNumber} wins $${pot} with ${winner.handRank}!`);
+          
+        // Oznacz przegranych
+        activePlayers.forEach(player => {
+          if (player.id !== winner.player.id) {
+            player.hands[0].result = HandResult.LOSE;
+          }
+        });
+      } else {
+        // Remis - podziel pot
+        const winnings = Math.floor(pot / winners.length);
+        const winnerNames = winners.map(w => w.player.seatNumber).join(', ');
+        
+        winners.forEach(winner => {
+          winner.player.balance += winnings;
+          winner.player.hands[0].result = HandResult.WIN; // Tie
+        });
+        
+        console.log(`🏆 Players ${winnerNames} tie with ${winners[0].handRank} - split $${pot} ($${winnings} each)`);
+        this.io.to(game.id).emit('notification', 
+          `Players ${winnerNames} tie with ${winners[0].handRank}! Split pot: $${winnings} each`);
+          
+        // Oznacz przegranych
+        activePlayers.forEach(player => {
+          if (!winners.some(w => w.player.id === player.id)) {
+            player.hands[0].result = HandResult.LOSE;
+          }
+        });
+      }
     }
 
     // Reset pot
