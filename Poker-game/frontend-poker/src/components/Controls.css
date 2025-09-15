@@ -101,6 +101,158 @@
 
 /* Wszystkie przyciski używają podstawowego stylu .game-button */
 
+/* 🎯 Minimalistyczny popup nad przyciskiem raise */
+.raise-button-container {
+  position: relative;
+}
+
+.raise-popup {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, 
+    rgba(20, 20, 20, 0.95) 0%, 
+    rgba(40, 40, 40, 0.95) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 180px;
+  box-shadow: 
+    0 0 15px rgba(255, 215, 0, 0.3),
+    0 3px 15px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.raise-options {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  justify-content: center;
+}
+
+.raise-option {
+  padding: 4px 8px;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.8) 0%, 
+    rgba(255, 215, 0, 0.2) 50%, 
+    rgba(0, 0, 0, 0.8) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  min-width: 45px;
+}
+
+.raise-option:hover {
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.8) 0%, 
+    rgba(255, 215, 0, 0.3) 50%, 
+    rgba(0, 0, 0, 0.8) 100%);
+  border-color: rgba(255, 215, 0, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+}
+
+.raise-slider-container {
+  margin-bottom: 8px;
+}
+
+.raise-slider {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.5);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.raise-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  cursor: pointer;
+  border: 1px solid #FFFFFF;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+.raise-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  cursor: pointer;
+  border: 1px solid #FFFFFF;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+.raise-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+}
+
+.raise-confirm {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, 
+    rgba(0, 100, 0, 0.8) 0%, 
+    rgba(0, 150, 0, 0.3) 50%, 
+    rgba(0, 100, 0, 0.8) 100%);
+  border: 1px solid rgba(0, 200, 0, 0.6);
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.raise-confirm:hover:not(:disabled) {
+  background: linear-gradient(135deg, 
+    rgba(0, 120, 0, 0.8) 0%, 
+    rgba(0, 180, 0, 0.4) 50%, 
+    rgba(0, 120, 0, 0.8) 100%);
+  border-color: rgba(0, 255, 0, 0.8);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.raise-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.raise-cancel {
+  width: 24px;
+  height: 24px;
+  background: rgba(100, 100, 100, 0.8);
+  border: 1px solid rgba(150, 150, 150, 0.6);
+  border-radius: 50%;
+  color: #FFFFFF;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.raise-cancel:hover {
+  background: rgba(120, 120, 120, 0.8);
+  border-color: rgba(200, 200, 200, 0.8);
+}
+
 /* Responsywność */
 @media (max-width: 768px) {
   .control-buttons {
@@ -111,6 +263,22 @@
     padding: 10px 18px;
     font-size: 13px;
     width: 80px;
+  }
+
+  /* Responsive dla popup raise */
+  .raise-popup {
+    min-width: 160px;
+    padding: 6px;
+  }
+
+  .raise-options {
+    gap: 3px;
+  }
+
+  .raise-option {
+    padding: 3px 6px;
+    font-size: 9px;
+    min-width: 40px;
   }
 }
 
@@ -125,5 +293,40 @@
     padding: 8px 16px;
     font-size: 12px;
     width: 70px;
+  }
+
+  /* Responsive dla małych ekranów - popup raise */
+  .raise-popup {
+    min-width: 140px;
+    padding: 5px;
+  }
+
+  .raise-options {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .raise-option {
+    padding: 2px 4px;
+    font-size: 8px;
+    min-width: auto;
+    width: 100%;
+  }
+
+  .raise-actions {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .raise-confirm {
+    width: 100%;
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .raise-cancel {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
   }
 } 
