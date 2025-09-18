@@ -17,6 +17,34 @@ export interface ServerToClientEvents {
   
   // Błędy
   'error': (error: string) => void;
+  
+  // Event dla nieaktywnych graczy
+  'kicked_for_inactivity': (data: {
+    reason: string;
+    canRejoin: boolean;
+    gameId: string;
+  }) => void;
+  
+  // Event gdy gra się kończy
+  'gameEnded': (data: {
+    reason: string;
+    shouldReturnToLobby: boolean;
+    clearSeats?: boolean;
+  }) => void;
+  
+  // Event wymagający buy-in
+  'buyInRequired': (data: {
+    message: string;
+    timeout: number;
+    minBuyIn: number;
+    gameId: string;
+  }) => void;
+  
+  // Event potwierdzający buy-in
+  'buyInConfirmed': (data: {
+    newBalance: number;
+    buyInAmount: number;
+  }) => void;
 }
 
 export interface ClientToServerEvents {
@@ -25,6 +53,12 @@ export interface ClientToServerEvents {
   
   // Opuszczanie pokoju gry
   'leaveGame': (gameId: string, playerId: string) => void;
+  
+  // Buy-in request
+  'requestBuyIn': (gameId: string, playerId: string, amount: number) => void;
+  
+  // Decline buy-in (leave game)
+  'declineBuyIn': (gameId: string, playerId: string) => void;
 }
 
 export interface InterServerEvents {
