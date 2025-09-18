@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { GameState, PlayerMove } from '../types/game';
-import { GameService } from '../services/GameService';
+import { GameServiceRefactored } from '../services/GameServiceRefactored';
 
-export function createGameRouter(gameService: GameService) {
+export function createGameRouter(gameService: GameServiceRefactored) {
   const router = Router();
 
   // Utworzenie nowej gry
@@ -40,6 +40,7 @@ export function createGameRouter(gameService: GameService) {
   router.post('/games/join-or-create', (req, res) => {
     try {
       const { seatNumber, initialBalance } = req.body;
+      const MAIN_TABLE_ID = 'main-blackjack-table'; // ✅ STAŁY ID
       
       console.log('Join-or-create request received:', { 
         seatNumber, 
@@ -52,15 +53,15 @@ export function createGameRouter(gameService: GameService) {
         return res.status(400).json({ error: 'Nieprawidłowy numer miejsca (1-3)' });
       }
       
-      // 1. Spróbuj znaleźć dostępną grę
-      let game = gameService.findAvailableGame();
+      // 1. Sprawdź czy główny stół istnieje  
+      let game = gameService.getGameState(MAIN_TABLE_ID);
       
-      // 2. Jeśli brak - utwórz nową
+      // 2. Jeśli nie - stwórz z konkretnym ID
       if (!game) {
-        console.log('No available game found, creating new game...');
-        game = gameService.createGame();
+        console.log('Creating main blackjack table...');
+        game = gameService.createGame(MAIN_TABLE_ID); // ✅ Przekaż stały ID
       } else {
-        console.log('Found available game:', game.id);
+        console.log('Found existing main table:', game.id);
       }
       
       // 3. Od razu dołącz gracza (atomowo)
@@ -68,7 +69,7 @@ export function createGameRouter(gameService: GameService) {
       
       console.log('Player joined successfully:', player.id, 'to game:', game.id);
       res.status(200).json({ 
-        game: game,
+        game: gameService.cleanGameStateForClient(game),
         player: player 
       });
     } catch (error) {
@@ -133,6 +134,11 @@ export function createGameRouter(gameService: GameService) {
       const { gameId } = req.params;
       const { playerId, amount } = req.body;
       
+      // Basic validation
+      if (!gameId || typeof gameId !== 'string') {
+        return res.status(400).json({ error: 'Invalid game ID' });
+      }
+      
       console.log('💰 Received bet request:', {
         gameId,
         playerId,
@@ -140,14 +146,14 @@ export function createGameRouter(gameService: GameService) {
         body: req.body
       });
 
-      if (!playerId) {
-        console.error('❌ Missing playerId in bet request');
+      if (!playerId || typeof playerId !== 'string') {
+        console.error('❌ Missing or invalid playerId in bet request');
         return res.status(400).json({ error: 'Brak ID gracza' });
       }
 
-      if (!amount || amount <= 0) {
+      if (!amount || typeof amount !== 'number' || amount <= 0 || amount > 10000) {
         console.error('❌ Invalid bet amount:', amount);
-        return res.status(400).json({ error: 'Nieprawidłowa kwota zakładu' });
+        return res.status(400).json({ error: 'Nieprawidłowa kwota zakładu (1-10000)' });
       }
 
       const game = gameService.placeBet(gameId, playerId, amount);
@@ -220,13 +226,17 @@ export function createGameRouter(gameService: GameService) {
     }
   });
 
-  // Pobranie stanu gry
+  // Pobranie stanu gry (z automatycznym tworzeniem jeśli nie istnieje)
   router.get('/games/:gameId', (req, res) => {
     try {
       const { gameId } = req.params;
-      const game = gameService.getGameState(gameId);
+      let game = gameService.getGameState(gameId);
       
-      if (!game) {
+      // Jeśli gra nie istnieje i to główny stół - utwórz ją
+      if (!game && gameId === 'main-blackjack-table') {
+        console.log('Creating main blackjack table on demand...');
+        game = gameService.createGame(gameId);
+      } else if (!game) {
         return res.status(404).json({ error: 'Gra nie została znaleziona' });
       }
       
